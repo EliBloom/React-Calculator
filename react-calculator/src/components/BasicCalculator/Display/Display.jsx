@@ -17,6 +17,8 @@ export function Display(props) {
   return (
     <div>
       <Input
+        aria-label={"basic-calculator-display"}
+        className="basic-calculator__display"
         style={inputStyle}
         placeholder="Basic usage"
         value={props.expression}
