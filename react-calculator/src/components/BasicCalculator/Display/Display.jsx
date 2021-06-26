@@ -7,7 +7,7 @@ import { Input } from "antd";
  * able to take input from typng it on their keyboard.
  *
  */
-export function Display(props) {
+export function Display({ expression }) {
   const inputStyle = { width: "334px" };
 
   function handleInputChange(userInput) {
@@ -21,7 +21,7 @@ export function Display(props) {
         className="basic-calculator__display"
         style={inputStyle}
         placeholder="Basic usage"
-        value={props.expression}
+        value={expression}
         onChange={(userInputEvent) =>
           handleInputChange(userInputEvent.target.value)
         }

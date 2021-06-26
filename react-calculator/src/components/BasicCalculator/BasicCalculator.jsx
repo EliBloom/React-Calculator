@@ -7,9 +7,10 @@ import ButtonPad from "./ButtonPad";
 /**
  * This class is just a standard equation calculator.
  */
-export default function BasicCalculator() {
+export default function BasicCalculator({ errorMessageCallback }) {
+  // the string that is used for the display
   const [equationString, setEquationString] = useState("");
-  //this is to keep track of where each operator is in the equation array
+  // this is to keep track of where each operator is in the equation array
   let equationIndex = useRef(0);
   //the current operand being entered
   let operand = useRef("");
@@ -17,7 +18,13 @@ export default function BasicCalculator() {
   let equation = useRef([]);
 
   //This is how the order of operations is determined, it stores the index of each operator
-  let operatorMap = useRef({ "()": [], "^sqrt": [], "*/x÷%": [], "+-": [] });
+  let operatorMap = useRef({
+    "(": [],
+    ")": [],
+    "^sqrt": [],
+    "*/x÷%": [],
+    "+-": [],
+  });
 
   const basicCalculatorStyle = {
     justifyContent: "center",
@@ -74,7 +81,8 @@ export default function BasicCalculator() {
     operand.current = "";
     equation.current = [];
     operatorMap.current = {
-      "()": [],
+      "(": [],
+      ")": [],
       "^sqrt": [],
       "*/x÷%": [],
       "+-": [],
@@ -86,13 +94,20 @@ export default function BasicCalculator() {
    * Helper function that is where the equation is calculated. Sets the the equationString to the found solution.
    */
   function calculate() {
+    if (operatorMap.current["("].length != operatorMap.current[")"]) {
+      // setErrorMessage("Incorrect Use of Parenthesis");
+      errorMessageCallback("Incorrect Use of Parenthesis");
+      // throw new Error("Incorrect Use of Parenthesis");
+    }
+    if (operatorMap.current["("].length > 0) {
+    }
     let runningTotal = 0;
 
     const operatorMapKeys = Object.keys(operatorMap.current);
 
     // loop through the operatorMap and execute the sub problem. A standard for loop is used so that the algorithm
     // can handle mutations on the array that its looping for.
-    for (let a = 0; a < operatorMapKeys.length; a++) {
+    for (let a = 2; a < operatorMapKeys.length; a++) {
       let operatorsArr = operatorMap.current[operatorMapKeys[a]];
 
       if (operatorsArr.length > 0) {
@@ -178,10 +193,10 @@ export default function BasicCalculator() {
     <div style={basicCalculatorStyle}>
       <Display expression={equationString} />
       <ButtonPad
-        handleDigitCallback={handleDigitCallback}
-        handleEqualsCallback={handleEqualsCallback}
-        handleOperatorCallback={handleOperatorCallback}
-        handleAllClearCallback={handleAllClearCallback}
+        digitCallback={handleDigitCallback}
+        equalsCallback={handleEqualsCallback}
+        operatorCallback={handleOperatorCallback}
+        allClearCallback={handleAllClearCallback}
       />
     </div>
   );
