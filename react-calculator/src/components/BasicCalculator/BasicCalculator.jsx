@@ -45,8 +45,10 @@ export default function BasicCalculator({ errorMessageCallback }) {
    * as well as increase the equationIndex.
    */
   function handleOperatorCallback(operator) {
-    equation.current.push(operand.current);
-    equationIndex.current += 1;
+    if (operand.current) {
+      equation.current.push(operand.current);
+      equationIndex.current += 1;
+    }
     //operand reset since the value is being pushed onto the equation array
     operand.current = "";
 
@@ -67,8 +69,10 @@ export default function BasicCalculator({ errorMessageCallback }) {
    * mathematical expression.
    */
   function handleEqualsCallback() {
-    equation.current.push(operand.current);
-    equationIndex.current += 1;
+    if (operand.current) {
+      equation.current.push(operand.current);
+      equationIndex.current += 1;
+    }
 
     calculate();
   }
@@ -91,22 +95,86 @@ export default function BasicCalculator({ errorMessageCallback }) {
   }
 
   /**
+   * This function will either somehow solve any sub problems that are wrapped in paranthesis.
+   * Current idea is to keep pushing ( until we come across the first ),once the is come across, we pop off the last element pushed to the ( array. Solve
+   * the equation inside of this and splice the equated value into the equation array. Continue with this
+   */
+  function solveParenthesisSubEquations() {
+    const openeningParenthesis = [];
+    if (!equation.current.includes("(")) {
+      return;
+    } else {
+      for (let a = 0; a < equation.current.length; a++) {
+        if (equation.current[a] === "(") {
+          openeningParenthesis.push(a);
+        }
+        if (equation.current[a] === ")") {
+          let subEquation = equation.current.slice(
+            openeningParenthesis.pop() + 1,
+            a
+          );
+
+          console.log(subEquation);
+          // for (let a = 2; a < operatorMapKeys.length; a++) {
+          //   let operatorsArr = operatorMap.current[operatorMapKeys[a]];
+
+          //   if (operatorsArr.length > 0) {
+          //     // loop through the array value that is linked to the corresponding key
+          //     for (let b = 0; b < operatorsArr.length; b++) {
+          //       let operatorIndex = operatorMap.current[operatorMapKeys[a]][b];
+          //       const leftOperand = equation.current[operatorIndex - 1];
+          //       const rightOperand = equation.current[operatorIndex + 1];
+          //       const operator = equation.current[operatorIndex];
+          //       runningTotal = performOperation(
+          //         parseInt(leftOperand),
+          //         operator,
+          //         parseInt(rightOperand)
+          //       );
+          //       //replace the sub equation, e.g. "1+1", with the solved value, 2
+          //       equation.current.splice(operatorIndex - 1, 3, runningTotal);
+
+          //       // This is to go through the indeces in the operatorMap and shift them since the subprblem has been replaced by the solved value,
+          //       // shortening the equationArray, hence changing the indeces of the remaining operators
+          //       for (let c = 0; c < operatorMapKeys.length; c++) {
+          //         let operatorsArr = operatorMap.current[operatorMapKeys[c]];
+          //         const tempArr = [];
+          //         operatorsArr.forEach((index) => {
+          //           if (index > operatorIndex) {
+          //             index -= 2;
+          //             tempArr.push(index);
+          //           } else {
+          //             tempArr.push(index);
+          //           }
+          //         });
+          //         if (tempArr.length > 0) {
+          //           operatorMap.current[operatorMapKeys[c]] = tempArr;
+          //         }
+          //       }
+          //     }
+          //   }
+          // }
+        }
+      }
+    }
+  }
+
+  /**
    * Helper function that is where the equation is calculated. Sets the the equationString to the found solution.
    */
   function calculate() {
-    if (operatorMap.current["("].length != operatorMap.current[")"]) {
-      // setErrorMessage("Incorrect Use of Parenthesis");
+    // Check if parenthesis are properly entered
+    if (operatorMap.current["("].length != operatorMap.current[")"].length) {
       errorMessageCallback("Incorrect Use of Parenthesis");
-      // throw new Error("Incorrect Use of Parenthesis");
     }
     if (operatorMap.current["("].length > 0) {
+      solveParenthesisSubEquations();
     }
     let runningTotal = 0;
 
     const operatorMapKeys = Object.keys(operatorMap.current);
 
     // loop through the operatorMap and execute the sub problem. A standard for loop is used so that the algorithm
-    // can handle mutations on the array that its looping for.
+    // can handle mutations on the array that its looping over.
     for (let a = 2; a < operatorMapKeys.length; a++) {
       let operatorsArr = operatorMap.current[operatorMapKeys[a]];
 
