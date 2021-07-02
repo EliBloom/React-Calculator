@@ -105,10 +105,12 @@ export default function BasicCalculator({ errorMessageCallback }) {
     if (!equation.current.includes("(")) {
       return;
     } else {
+      // the variable "a" itself will mark the index of the closing parenthesis
       for (let a = 0; a < equation.current.length; a++) {
         if (equation.current[a] === "(") {
           openeningParenthesisArr.push(a);
         }
+
         if (equation.current[a] === ")") {
           let openingParenthesis = openeningParenthesisArr.pop();
           // the characters from equation that are bewtween the opening and closing parenthesis
@@ -119,26 +121,21 @@ export default function BasicCalculator({ errorMessageCallback }) {
               subEquationIndexes.push(index);
           }
 
-          console.log(equation.current);
-
-          console.log(subEquationIndexes);
-
-          console.log(subEquation);
-          // let iterator = subEquation.keys();
-          // for (let e of iterator) {
-          //   console.log(e);
-          // }
+          //looks like this portion couldbe abstracted out since the code is also used in calculate() with slight tweaks
           const operatorMapKeys = Object.keys(operatorMap.current);
           let runningTotal = 0;
 
-          for (let a = 2; a < operatorMapKeys.length; a++) {
-            let operatorsArr = operatorMap.current[operatorMapKeys[a]];
+          // loop through all of the operators, and if they lie in between the opening and closing parenthesis indexes, solve the subequation
+          for (let b = 2; b < operatorMapKeys.length; b++) {
+            // the operatorMap is an object whith math operators as keys and arrays filled with the idexes of the operators as values, this is selecting
+            // the value array so that we can loop thorough indexes of that key
+            let operatorsArr = operatorMap.current[operatorMapKeys[b]];
 
             if (operatorsArr.length > 0) {
               // loop through the array value that is linked to the corresponding key
-              for (let b = 0; b < operatorsArr.length; b++) {
-                let operatorIndex = operatorMap.current[operatorMapKeys[a]][b];
-                // if the index from the operatorMap is between the index of the opeing parenthesis and  closing, solve the internal arithmetic
+              for (let c = 0; c < operatorsArr.length; c++) {
+                let operatorIndex = operatorMap.current[operatorMapKeys[b]][c];
+                // if the index from the operatorMap is between the index of the opening parenthesis and  closing, solve the internal arithmetic
                 if (operatorIndex > openingParenthesis && operatorIndex < a) {
                   const leftOperand = equation.current[operatorIndex - 1];
                   const rightOperand = equation.current[operatorIndex + 1];
@@ -148,34 +145,62 @@ export default function BasicCalculator({ errorMessageCallback }) {
                     operator,
                     parseInt(rightOperand)
                   );
-                  console.log(runningTotal);
+
+                  //replace the sub equation, e.g. "1+1", with the solved value, 2
+                  equation.current.splice(operatorIndex - 1, 3, runningTotal);
+
+                  // This is to go through the indeces in the operatorMap and shift them since the subprblem has been replaced by the solved value,
+                  // shortening the equationArray, hence changing the indeces of the remaining operators
+                  for (let d = 0; d < operatorMapKeys.length; d++) {
+                    let operatorsArr = operatorMap.current[operatorMapKeys[d]];
+                    const tempArr = [];
+                    operatorsArr.forEach((index) => {
+                      if (index > operatorIndex) {
+                        index -= 2;
+                        tempArr.push(index);
+                      } else {
+                        tempArr.push(index);
+                      }
+                    });
+                    if (tempArr.length > 0) {
+                      operatorMap.current[operatorMapKeys[c]] = tempArr;
+                    }
+                  }
                 }
-
-                // //replace the sub equation, e.g. "1+1", with the solved value, 2
-                // equation.current.splice(operatorIndex - 1, 3, runningTotal);
-
-                // // This is to go through the indeces in the operatorMap and shift them since the subprblem has been replaced by the solved value,
-                // // shortening the equationArray, hence changing the indeces of the remaining operators
-                // for (let c = 0; c < operatorMapKeys.length; c++) {
-                //   let operatorsArr = operatorMap.current[operatorMapKeys[c]];
-                //   const tempArr = [];
-                //   operatorsArr.forEach((index) => {
-                //     if (index > operatorIndex) {
-                //       index -= 2;
-                //       tempArr.push(index);
-                //     } else {
-                //       tempArr.push(index);
-                //     }
-                //   });
-                //   if (tempArr.length > 0) {
-                //     operatorMap.current[operatorMapKeys[c]] = tempArr;
-                //   }
-                // }
               }
             }
           }
         }
       }
+
+      equation.current = equation.current.filter(
+        (character) => character !== ")" && character !== "("
+      );
+      //reset operator map since all of these are now wrong due to the removal of parenthesis characters
+      operatorMap.current = {
+        "(": [],
+        ")": [],
+        "^sqrt": [],
+        "*/x÷%": [],
+        "+-": [],
+      };
+
+      ///re assign the indexes of the operators in the equation
+      for (let index of equation.current.keys()) {
+        if ("^sqrt".includes(equation.current[index])) {
+          operatorMap.current["^sqrt"].push(index);
+        }
+        if ("*/x÷%".includes(equation.current[index])) {
+          operatorMap.current["*/x÷%"].push(index);
+        }
+        if ("+-".includes(equation.current[index])) {
+          operatorMap.current["+-"].push(index);
+        }
+      }
+
+      console.log(operatorMap.current);
+
+      console.log(equation.current);
     }
   }
 
