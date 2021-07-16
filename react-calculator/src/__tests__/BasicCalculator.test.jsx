@@ -108,6 +108,8 @@ describe("Basic Calculator Test", () => {
     let modulusButton;
     let decimalButton;
     let equalsButton;
+    let openingParenthesesButton;
+    let closingParenthesesButton;
 
     beforeEach(() => {
       oneButton = screen.getByText("1");
@@ -127,6 +129,8 @@ describe("Basic Calculator Test", () => {
       modulusButton = screen.getByText("%");
       decimalButton = screen.getByText(".");
       equalsButton = screen.getByText("=");
+      openingParenthesesButton = screen.getByText("(");
+      closingParenthesesButton = screen.getByText(")");
     });
 
     describe("Addition Functionality", () => {
@@ -402,6 +406,54 @@ describe("Basic Calculator Test", () => {
         });
 
         expect(display.value).toEqual("22");
+      });
+    });
+
+    describe("Parentheses Functionality", () => {
+      test("Simple usage of parentheses", async () => {
+        fireEvent.click(twoButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(twoButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(eightButton);
+        fireEvent.click(closingParenthesesButton);
+        fireEvent.click(equalsButton);
+
+        const display = screen.getByRole("textbox", {
+          name: /basic-calculator-display/i,
+        });
+
+        expect(display.value).toEqual("20");
+      });
+
+      test("Advanced usage of parentheses", async () => {
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(twoButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(oneButton);
+        fireEvent.click(fiveButton);
+        fireEvent.click(divideButton);
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(twoButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(threeButton);
+        fireEvent.click(closingParenthesesButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(twoButton);
+        fireEvent.click(closingParenthesesButton);
+        fireEvent.click(minusButton);
+        fireEvent.click(threeButton);
+        fireEvent.click(closingParenthesesButton);
+
+        fireEvent.click(equalsButton);
+
+        const display = screen.getByRole("textbox", {
+          name: /basic-calculator-display/i,
+        });
+
+        expect(display.value).toEqual("9");
       });
     });
   });
