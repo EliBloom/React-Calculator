@@ -32,7 +32,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
   };
 
   /**
-   * Callabck for when a number is entered into the calculator.
+   * Callback for when a number is entered into the calculator.
    */
   function handleDigitCallback(digit) {
     operand.current += digit;
@@ -62,6 +62,24 @@ export default function BasicCalculator({ errorMessageCallback }) {
         equationIndex.current += 1;
       }
     });
+  }
+
+  /**
+   * Callback for when the pi button is pressed.
+   */
+  function handlePiCallback() {
+    operand.current += Math.PI;
+
+    setEquationString(equationString + "π");
+  }
+
+  /**
+   * Callback for when the Eulers/natural number button is pressed.
+   */
+  function handleEulersCallback() {
+    operand.current += Math.E;
+
+    setEquationString(equationString + Math.E);
   }
 
   /**
@@ -241,9 +259,9 @@ export default function BasicCalculator({ errorMessageCallback }) {
           const rightOperand = equation.current[operatorIndex + 1];
           const operator = equation.current[operatorIndex];
           runningTotal = performOperation(
-            parseInt(leftOperand),
+            parseFloat(leftOperand),
             operator,
-            parseInt(rightOperand)
+            parseFloat(rightOperand)
           );
           //replace the sub equation, e.g. "1+1", with the solved value, 2
           equation.current.splice(operatorIndex - 1, 3, runningTotal);
@@ -319,6 +337,8 @@ export default function BasicCalculator({ errorMessageCallback }) {
         equalsCallback={handleEqualsCallback}
         operatorCallback={handleOperatorCallback}
         allClearCallback={handleAllClearCallback}
+        piCallback={handlePiCallback}
+        eulersCallback={handleEulersCallback}
       />
     </div>
   );

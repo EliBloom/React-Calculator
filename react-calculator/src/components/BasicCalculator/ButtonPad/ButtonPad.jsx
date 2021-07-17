@@ -10,6 +10,8 @@ export default function ButtonPad({
   equalsCallback,
   operatorCallback,
   allClearCallback,
+  piCallback,
+  eulersCallback,
 }) {
   const buttonStyle = { padding: "8px", margin: "2px", width: "80px" };
 
@@ -59,6 +61,15 @@ export default function ButtonPad({
             AC
           </Button>
         </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => piCallback()}
+          >
+            π
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -74,7 +85,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => operatorCallback(".")}
+            onClick={() => digitCallback(".")}
           >
             .
           </Button>
@@ -95,6 +106,15 @@ export default function ButtonPad({
             onClick={() => operatorCallback("+")}
           >
             +
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => operatorCallback("^")}
+          >
+            x<sup>y</sup>
           </Button>
         </Col>
       </Row>
@@ -135,6 +155,15 @@ export default function ButtonPad({
             -
           </Button>
         </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => eulersCallback()}
+          >
+            e
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -173,6 +202,15 @@ export default function ButtonPad({
             x
           </Button>
         </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => operatorCallback("sqrt")}
+          >
+            √
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -209,6 +247,15 @@ export default function ButtonPad({
             onClick={() => operatorCallback("÷")}
           >
             ÷
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => allClearCallback()}
+          >
+            Test
           </Button>
         </Col>
       </Row>
