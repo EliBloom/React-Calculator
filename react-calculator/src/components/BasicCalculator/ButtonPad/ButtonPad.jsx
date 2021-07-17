@@ -6,13 +6,12 @@ import { Row, Col, Button } from "antd";
  * Every button is linked to the parent class via callback functions that are passed.
  */
 export default function ButtonPad({
-  handleDigitCallback,
-  handleEqualsCallback,
-  handleOperatorCallback,
-  handleAllClearCallback,
-  handlePiCallback,
-  // handlePowerCallback,
-  handleEulersCallback,
+  digitCallback,
+  equalsCallback,
+  operatorCallback,
+  allClearCallback,
+  piCallback,
+  eulersCallback,
 }) {
   const buttonStyle = { padding: "8px", margin: "2px", width: "80px" };
 
@@ -30,7 +29,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleOperatorCallback("(")}
+            onClick={() => operatorCallback("(")}
           >
             (
           </Button>
@@ -39,7 +38,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleOperatorCallback(")")}
+            onClick={() => operatorCallback(")")}
           >
             )
           </Button>
@@ -48,7 +47,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleOperatorCallback("%")}
+            onClick={() => operatorCallback("%")}
           >
             %
           </Button>
@@ -57,7 +56,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleAllClearCallback()}
+            onClick={() => allClearCallback()}
           >
             AC
           </Button>
@@ -66,7 +65,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handlePiCallback()}
+            onClick={() => piCallback()}
           >
             π
           </Button>
@@ -77,7 +76,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback("0")}
+            onClick={() => digitCallback("0")}
           >
             0
           </Button>
@@ -86,7 +85,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback(".")}
+            onClick={() => digitCallback(".")}
           >
             .
           </Button>
@@ -95,7 +94,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleEqualsCallback()}
+            onClick={() => equalsCallback()}
           >
             =
           </Button>
@@ -104,7 +103,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleOperatorCallback("+")}
+            onClick={() => operatorCallback("+")}
           >
             +
           </Button>
@@ -113,7 +112,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleOperatorCallback("^")}
+            onClick={() => operatorCallback("^")}
           >
             x<sup>y</sup>
           </Button>
@@ -124,7 +123,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback("1")}
+            onClick={() => digitCallback("1")}
           >
             1
           </Button>
@@ -133,7 +132,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback("2")}
+            onClick={() => digitCallback("2")}
           >
             2
           </Button>
@@ -142,7 +141,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback("3")}
+            onClick={() => digitCallback("3")}
           >
             3
           </Button>
@@ -151,7 +150,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleOperatorCallback("-")}
+            onClick={() => operatorCallback("-")}
           >
             -
           </Button>
@@ -160,7 +159,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleEulersCallback()}
+            onClick={() => eulersCallback()}
           >
             e
           </Button>
@@ -171,7 +170,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback("4")}
+            onClick={() => digitCallback("4")}
           >
             4
           </Button>
@@ -180,7 +179,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback("5")}
+            onClick={() => digitCallback("5")}
           >
             5
           </Button>
@@ -189,7 +188,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback("6")}
+            onClick={() => digitCallback("6")}
           >
             6
           </Button>
@@ -198,7 +197,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleOperatorCallback("x")}
+            onClick={() => operatorCallback("x")}
           >
             x
           </Button>
@@ -207,7 +206,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleOperatorCallback("sqrt")}
+            onClick={() => operatorCallback("sqrt")}
           >
             √
           </Button>
@@ -218,7 +217,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback("7")}
+            onClick={() => digitCallback("7")}
           >
             7
           </Button>
@@ -227,7 +226,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback("8")}
+            onClick={() => digitCallback("8")}
           >
             8
           </Button>
@@ -236,7 +235,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleDigitCallback("9")}
+            onClick={() => digitCallback("9")}
           >
             9
           </Button>
@@ -245,7 +244,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleOperatorCallback("÷")}
+            onClick={() => operatorCallback("÷")}
           >
             ÷
           </Button>
@@ -254,7 +253,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleAllClearCallback()}
+            onClick={() => allClearCallback()}
           >
             Test
           </Button>

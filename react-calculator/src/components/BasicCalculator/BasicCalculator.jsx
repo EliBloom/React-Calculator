@@ -7,9 +7,10 @@ import ButtonPad from "./ButtonPad";
 /**
  * This class is just a standard equation calculator.
  */
-export default function BasicCalculator() {
+export default function BasicCalculator({ errorMessageCallback }) {
+  // the string that is used for the display
   const [equationString, setEquationString] = useState("");
-  //this is to keep track of where each operator is in the equation array
+  // this is to keep track of where each operator is in the equation array
   let equationIndex = useRef(0);
   //the current operand being entered
   let operand = useRef("");
@@ -17,7 +18,13 @@ export default function BasicCalculator() {
   let equation = useRef([]);
 
   //This is how the order of operations is determined, it stores the index of each operator
-  let operatorMap = useRef({ "()": [], "^sqrt": [], "*/x÷%": [], "+-": [] });
+  let operatorMap = useRef({
+    "(": [],
+    ")": [],
+    "^sqrt": [],
+    "*/x÷%": [],
+    "+-": [],
+  });
 
   const basicCalculatorStyle = {
     justifyContent: "center",
@@ -38,8 +45,10 @@ export default function BasicCalculator() {
    * as well as increase the equationIndex.
    */
   function handleOperatorCallback(operator) {
-    equation.current.push(operand.current);
-    equationIndex.current += 1;
+    if (operand.current) {
+      equation.current.push(operand.current);
+      equationIndex.current += 1;
+    }
     //operand reset since the value is being pushed onto the equation array
     operand.current = "";
 
@@ -78,8 +87,10 @@ export default function BasicCalculator() {
    * mathematical expression.
    */
   function handleEqualsCallback() {
-    equation.current.push(operand.current);
-    equationIndex.current += 1;
+    if (operand.current) {
+      equation.current.push(operand.current);
+      equationIndex.current += 1;
+    }
 
     calculate();
   }
@@ -92,7 +103,8 @@ export default function BasicCalculator() {
     operand.current = "";
     equation.current = [];
     operatorMap.current = {
-      "()": [],
+      "(": [],
+      ")": [],
       "^sqrt": [],
       "*/x÷%": [],
       "+-": [],
@@ -101,16 +113,142 @@ export default function BasicCalculator() {
   }
 
   /**
+   * This function will either somehow solve any sub problems that are wrapped in paranthesis.
+   * Current idea is to keep pushing ( until we come across the first ),once the is come across, we pop off the last element pushed to the ( array. Solve
+   * the equation inside of this and splice the equated value into the equation array. Continue with this
+   */
+  function solveParenthesisSubEquations() {
+    const openeningParenthesisArr = [];
+    const subEquationIndexes = [];
+    if (!equation.current.includes("(")) {
+      return;
+    } else {
+      // the variable "a" itself will mark the index of the closing parentheses
+      for (let a = 0; a < equation.current.length; a++) {
+        if (equation.current[a] === "(") {
+          openeningParenthesisArr.push(a);
+        }
+
+        if (equation.current[a] === ")") {
+          let openingParentheses = openeningParenthesisArr.pop();
+          // the characters from equation that are bewtween the opening and closing parentheses
+          let subEquation = equation.current.slice(openingParentheses + 1, a);
+          // this is to get the indexes of those characters above that are between the parentheses.
+          for (let index of equation.current.keys()) {
+            if (index > openingParentheses && index < a)
+              subEquationIndexes.push(index);
+          }
+
+          //looks like this portion couldbe abstracted out since the code is also used in calculate() with slight tweaks
+          const operatorMapKeys = Object.keys(operatorMap.current);
+          let runningTotal = 0;
+
+          // loop through all of the operators, and if they lie in between the opening and closing parentheses indexes, solve the subequation
+          for (let b = 2; b < operatorMapKeys.length; b++) {
+            // the operatorMap is an object whith math operators as keys and arrays filled with the idexes of the operators as values, this is selecting
+            // the value array so that we can loop thorough indexes of that key
+            let operatorsArr = operatorMap.current[operatorMapKeys[b]];
+
+            if (operatorsArr.length > 0) {
+              // loop through the array value that is linked to the corresponding key
+              for (let c = 0; c < operatorsArr.length; c++) {
+                let operatorIndex = operatorMap.current[operatorMapKeys[b]][c];
+                // if the index from the operatorMap is between the index of the opening parentheses and  closing, solve the internal arithmetic
+                if (operatorIndex > openingParentheses && operatorIndex < a) {
+                  const leftOperand = equation.current[operatorIndex - 1];
+                  const rightOperand = equation.current[operatorIndex + 1];
+                  const operator = equation.current[operatorIndex];
+                  runningTotal = performOperation(
+                    parseInt(leftOperand),
+                    operator,
+                    parseInt(rightOperand)
+                  );
+
+                  // make sure that there is only one subequation between the paranthesis
+                  if (a - openingParentheses === 4) {
+                    // Used to keep track of the sub equation idexes, including opening/closin parentheses.
+                    const subEquationSpan = a - openingParentheses + 1;
+                    //replace the sub equation, e.g. "1+1", with the solved value, 2
+                    equation.current.splice(
+                      openingParentheses,
+                      subEquationSpan,
+                      runningTotal
+                    );
+                  }
+
+                  //reset operator map since all of these are now wrong due to the removal of parentheses characters
+                  operatorMap.current = {
+                    "(": [],
+                    ")": [],
+                    "^sqrt": [],
+                    "*/x÷%": [],
+                    "+-": [],
+                  };
+                  // This is to go through the indeces in the operatorMap and shift them since the subprblem has been replaced by the solved value,
+                  // shortening the equationArray, hence changing the indeces of the remaining operators
+                  for (let index of equation.current.keys()) {
+                    if ("^sqrt".includes(equation.current[index])) {
+                      operatorMap.current["^sqrt"].push(index);
+                    }
+                    if ("*/x÷%".includes(equation.current[index])) {
+                      operatorMap.current["*/x÷%"].push(index);
+                    }
+                    if ("+-".includes(equation.current[index])) {
+                      operatorMap.current["+-"].push(index);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+
+      equation.current = equation.current.filter(
+        (character) => character !== ")" && character !== "("
+      );
+      //reset operator map since all of these are now wrong due to the removal of parentheses characters
+      operatorMap.current = {
+        "(": [],
+        ")": [],
+        "^sqrt": [],
+        "*/x÷%": [],
+        "+-": [],
+      };
+
+      ///re assign the indexes of the operators in the equation
+      for (let index of equation.current.keys()) {
+        if ("^sqrt".includes(equation.current[index])) {
+          operatorMap.current["^sqrt"].push(index);
+        }
+        if ("*/x÷%".includes(equation.current[index])) {
+          operatorMap.current["*/x÷%"].push(index);
+        }
+        if ("+-".includes(equation.current[index])) {
+          operatorMap.current["+-"].push(index);
+        }
+      }
+    }
+  }
+
+  /**
    * Helper function that is where the equation is calculated. Sets the the equationString to the found solution.
    */
   function calculate() {
+    // Check if parentheses are properly entered
+    if (operatorMap.current["("].length != operatorMap.current[")"].length) {
+      errorMessageCallback("Incorrect Use of Parenthesis");
+    }
+    if (operatorMap.current["("].length > 0) {
+      solveParenthesisSubEquations();
+    }
     let runningTotal = 0;
 
     const operatorMapKeys = Object.keys(operatorMap.current);
 
     // loop through the operatorMap and execute the sub problem. A standard for loop is used so that the algorithm
-    // can handle mutations on the array that its looping for.
-    for (let a = 0; a < operatorMapKeys.length; a++) {
+    // can handle mutations on the array that its looping over.
+    for (let a = 2; a < operatorMapKeys.length; a++) {
       let operatorsArr = operatorMap.current[operatorMapKeys[a]];
 
       if (operatorsArr.length > 0) {
@@ -160,7 +298,6 @@ export default function BasicCalculator() {
       case "^":
         total = Math.pow(leftOperand, rightOperand);
         break;
-
       case "sqrt":
         total = Math.sqrt(rightOperand);
         break;
@@ -196,12 +333,12 @@ export default function BasicCalculator() {
     <div style={basicCalculatorStyle}>
       <Display expression={equationString} />
       <ButtonPad
-        handleDigitCallback={handleDigitCallback}
-        handleEqualsCallback={handleEqualsCallback}
-        handleOperatorCallback={handleOperatorCallback}
-        handleAllClearCallback={handleAllClearCallback}
-        handlePiCallback={handlePiCallback}
-        handleEulersCallback={handleEulersCallback}
+        digitCallback={handleDigitCallback}
+        equalsCallback={handleEqualsCallback}
+        operatorCallback={handleOperatorCallback}
+        allClearCallback={handleAllClearCallback}
+        piCallback={handlePiCallback}
+        eulersCallback={handleEulersCallback}
       />
     </div>
   );
