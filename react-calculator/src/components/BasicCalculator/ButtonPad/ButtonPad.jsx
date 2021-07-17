@@ -10,6 +10,9 @@ export default function ButtonPad({
   handleEqualsCallback,
   handleOperatorCallback,
   handleAllClearCallback,
+  handlePiCallback,
+  // handlePowerCallback,
+  handleEulersCallback,
 }) {
   const buttonStyle = { padding: "8px", margin: "2px", width: "80px" };
 
@@ -59,6 +62,15 @@ export default function ButtonPad({
             AC
           </Button>
         </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => handlePiCallback()}
+          >
+            π
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -74,7 +86,7 @@ export default function ButtonPad({
           <Button
             style={buttonStyle}
             type="primary"
-            onClick={() => handleOperatorCallback(".")}
+            onClick={() => handleDigitCallback(".")}
           >
             .
           </Button>
@@ -95,6 +107,15 @@ export default function ButtonPad({
             onClick={() => handleOperatorCallback("+")}
           >
             +
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => handleOperatorCallback("^")}
+          >
+            x<sup>y</sup>
           </Button>
         </Col>
       </Row>
@@ -135,6 +156,15 @@ export default function ButtonPad({
             -
           </Button>
         </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => handleEulersCallback()}
+          >
+            e
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -173,6 +203,15 @@ export default function ButtonPad({
             x
           </Button>
         </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => handleOperatorCallback("sqrt")}
+          >
+            √
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -209,6 +248,15 @@ export default function ButtonPad({
             onClick={() => handleOperatorCallback("÷")}
           >
             ÷
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => handleAllClearCallback()}
+          >
+            Test
           </Button>
         </Col>
       </Row>
