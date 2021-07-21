@@ -21,7 +21,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
   let operatorMap = useRef({
     "(": [],
     ")": [],
-    "^sqrt": [],
+    "^sqrtsinloglncostan": [],
     "*/x÷%": [],
     "+-": [],
   });
@@ -33,6 +33,8 @@ export default function BasicCalculator({ errorMessageCallback }) {
 
   /**
    * Callback for when a number is entered into the calculator.
+   *
+   * @param digit - string of the numerical input.
    */
   function handleDigitCallback(digit) {
     operand.current += digit;
@@ -43,6 +45,8 @@ export default function BasicCalculator({ errorMessageCallback }) {
   /**
    * Callback for when an operator is entered. This will push the operand and operator to their perspective arrays
    * as well as increase the equationIndex.
+   *
+   * @param operator - the mathematical operator symbol, e.g. +/*()
    */
   function handleOperatorCallback(operator) {
     if (operand.current) {
@@ -83,6 +87,22 @@ export default function BasicCalculator({ errorMessageCallback }) {
   }
 
   /**
+   * Callback for when a math function button is pressed.
+   *
+   * @param functionName - the name of the math function being called.
+   */
+  function handleMathFunctionCallback(functionName) {
+    // equationIndex.current += 1;
+    handleOperatorCallback(functionName);
+    handleOperatorCallback("(");
+
+    console.log(equation.current);
+    console.log(operatorMap.current);
+
+    setEquationString(equationString + functionName + "(");
+  }
+
+  /**
    * Callback for when the equals sign has been clicked, calls the method, calculate to find the final solution to the
    * mathematical expression.
    */
@@ -105,7 +125,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
     operatorMap.current = {
       "(": [],
       ")": [],
-      "^sqrt": [],
+      "^sqrtsinloglncostan": [],
       "*/x÷%": [],
       "+-": [],
     };
@@ -164,6 +184,11 @@ export default function BasicCalculator({ errorMessageCallback }) {
                     parseInt(rightOperand)
                   );
 
+                  // // Check to see if the character to the left of opening parentheses is the same as one of the characters in the math functions
+                  // if("nsgt".includes(equation.current[operatorIndex-2])){
+
+                  // }
+
                   // make sure that there is only one subequation between the paranthesis
                   if (a - openingParentheses === 4) {
                     // Used to keep track of the sub equation idexes, including opening/closin parentheses.
@@ -180,7 +205,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
                   operatorMap.current = {
                     "(": [],
                     ")": [],
-                    "^sqrt": [],
+                    "^sqrtsinloglncostan": [],
                     "*/x÷%": [],
                     "+-": [],
                   };
@@ -211,15 +236,15 @@ export default function BasicCalculator({ errorMessageCallback }) {
       operatorMap.current = {
         "(": [],
         ")": [],
-        "^sqrt": [],
+        "^sqrtsinloglncostan": [],
         "*/x÷%": [],
         "+-": [],
       };
 
       ///re assign the indexes of the operators in the equation
       for (let index of equation.current.keys()) {
-        if ("^sqrt".includes(equation.current[index])) {
-          operatorMap.current["^sqrt"].push(index);
+        if ("^sqrtsinloglncostan".includes(equation.current[index])) {
+          operatorMap.current["^sqrtsinloglncostan"].push(index);
         }
         if ("*/x÷%".includes(equation.current[index])) {
           operatorMap.current["*/x÷%"].push(index);
@@ -263,6 +288,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
             operator,
             parseFloat(rightOperand)
           );
+
           //replace the sub equation, e.g. "1+1", with the solved value, 2
           equation.current.splice(operatorIndex - 1, 3, runningTotal);
 
@@ -291,6 +317,10 @@ export default function BasicCalculator({ errorMessageCallback }) {
 
   /**
    * Helper function where the simple mathematical operations are actually performed, e.g. 1+1, 2-1, etc..
+   *
+   * @param leftOperand - left digit in equation
+   * @param operator - the operator symbol
+   * @param rightOperand - the right operator
    */
   function performOperation(leftOperand, operator, rightOperand) {
     let total = 0;
@@ -300,6 +330,18 @@ export default function BasicCalculator({ errorMessageCallback }) {
         break;
       case "sqrt":
         total = Math.sqrt(rightOperand);
+        break;
+      case "sin":
+        total = Math.sin((rightOperand * Math.PI) / 180);
+        break;
+      case "cos":
+        total = Math.cos((rightOperand * Math.PI) / 180);
+        break;
+      case "tan":
+        total = Math.tan((rightOperand * Math.PI) / 180);
+        break;
+      case "ln":
+        total = Math.log(rightOperand);
         break;
       case "x":
         total = leftOperand * rightOperand;
@@ -339,6 +381,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
         allClearCallback={handleAllClearCallback}
         piCallback={handlePiCallback}
         eulersCallback={handleEulersCallback}
+        mathFunctionCallback={handleMathFunctionCallback}
       />
     </div>
   );

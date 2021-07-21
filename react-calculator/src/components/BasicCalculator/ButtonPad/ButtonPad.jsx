@@ -12,6 +12,7 @@ export default function ButtonPad({
   allClearCallback,
   piCallback,
   eulersCallback,
+  mathFunctionCallback,
 }) {
   const buttonStyle = { padding: "8px", margin: "2px", width: "80px" };
 
@@ -70,6 +71,15 @@ export default function ButtonPad({
             π
           </Button>
         </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => mathFunctionCallback("log")}
+          >
+            TEST
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -115,6 +125,15 @@ export default function ButtonPad({
             onClick={() => operatorCallback("^")}
           >
             x<sup>y</sup>
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => mathFunctionCallback("ln")}
+          >
+            ln
           </Button>
         </Col>
       </Row>
@@ -164,6 +183,15 @@ export default function ButtonPad({
             e
           </Button>
         </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => mathFunctionCallback("cos")}
+          >
+            cos
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -211,6 +239,15 @@ export default function ButtonPad({
             √
           </Button>
         </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => mathFunctionCallback("sin")}
+          >
+            sin
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
@@ -255,7 +292,16 @@ export default function ButtonPad({
             type="primary"
             onClick={() => allClearCallback()}
           >
-            Test
+            EXP
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            style={buttonStyle}
+            type="primary"
+            onClick={() => mathFunctionCallback("tan")}
+          >
+            tan
           </Button>
         </Col>
       </Row>
