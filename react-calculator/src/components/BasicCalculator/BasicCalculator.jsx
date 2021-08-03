@@ -144,6 +144,9 @@ export default function BasicCalculator({ errorMessageCallback }) {
       return;
     } else {
       // the variable "a" itself will mark the index of the closing parentheses
+      //BROKEN,  2x(3+cos(2-6)), breaks after solving (2-6), this is because a is at index 10 when the first parentheses sub problem is being solved
+      // but once the first sub problem is solved, the array being looped is now only 8 in length, placing the index 10 out of range,  so it ends the loop
+      // have to re index a when the sub problem is spliced from the equation
       for (let a = 0; a < equation.current.length; a++) {
         if (equation.current[a] === "(") {
           openeningParenthesisArr.push(a);
@@ -173,7 +176,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
               // loop through the array value that is linked to the corresponding key
               for (let c = 0; c < operatorsArr.length; c++) {
                 let operatorIndex = operatorMap.current[operatorMapKeys[b]][c];
-                // if the index from the operatorMap is between the index of the opening parentheses and  closing, solve the internal arithmetic
+                // if the index from the operatorMap is between the index of the opening parentheses and closing, solve the internal arithmetic
                 if (operatorIndex > openingParentheses && operatorIndex < a) {
                   const leftOperand = equation.current[operatorIndex - 1];
                   const rightOperand = equation.current[operatorIndex + 1];
@@ -193,6 +196,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
                   if (a - openingParentheses === 4) {
                     // Used to keep track of the sub equation idexes, including opening/closin parentheses.
                     const subEquationSpan = a - openingParentheses + 1;
+                    a = a - subEquationSpan;
                     //replace the sub equation, e.g. "1+1", with the solved value, 2
                     equation.current.splice(
                       openingParentheses,
@@ -209,11 +213,11 @@ export default function BasicCalculator({ errorMessageCallback }) {
                     "*/x÷%": [],
                     "+-": [],
                   };
-                  // This is to go through the indeces in the operatorMap and shift them since the subprblem has been replaced by the solved value,
+                  // This is to go through the indeces in the operatorMap and shift them since the subproblem has been replaced by the solved value,
                   // shortening the equationArray, hence changing the indeces of the remaining operators
                   for (let index of equation.current.keys()) {
-                    if ("^sqrt".includes(equation.current[index])) {
-                      operatorMap.current["^sqrt"].push(index);
+                    if ("^sqrtsinloglncostan".includes(equation.current[index])) {
+                      operatorMap.current["^sqrtsinloglncostan"].push(index);
                     }
                     if ("*/x÷%".includes(equation.current[index])) {
                       operatorMap.current["*/x÷%"].push(index);
@@ -265,6 +269,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
       errorMessageCallback("Incorrect Use of Parenthesis");
     }
     if (operatorMap.current["("].length > 0) {
+      // remove and solve sub problems within parentheses
       solveParenthesisSubEquations();
     }
     let runningTotal = 0;
@@ -280,17 +285,32 @@ export default function BasicCalculator({ errorMessageCallback }) {
         // loop through the array value that is linked to the corresponding key
         for (let b = 0; b < operatorsArr.length; b++) {
           let operatorIndex = operatorMap.current[operatorMapKeys[a]][b];
-          const leftOperand = equation.current[operatorIndex - 1];
-          const rightOperand = equation.current[operatorIndex + 1];
           const operator = equation.current[operatorIndex];
-          runningTotal = performOperation(
-            parseFloat(leftOperand),
-            operator,
-            parseFloat(rightOperand)
-          );
 
-          //replace the sub equation, e.g. "1+1", with the solved value, 2
-          equation.current.splice(operatorIndex - 1, 3, runningTotal);
+          if (operatorMapKeys[a] === "^sqrtsinloglncostan") {
+            const rightOperand = equation.current[operatorIndex + 1];
+            runningTotal = performOperation(
+              null,
+              operator,
+              parseFloat(rightOperand)
+            );
+            equation.current.splice(operatorIndex, 2, runningTotal);
+            console.log(equation.current)
+          }
+          else {
+            const leftOperand = equation.current[operatorIndex - 1];
+            const rightOperand = equation.current[operatorIndex + 1];
+            // const operator = equation.current[operatorIndex];
+            runningTotal = performOperation(
+              parseFloat(leftOperand),
+              operator,
+              parseFloat(rightOperand)
+            );
+
+            //replace the sub equation, e.g. "1+1", with the solved value, 2
+            equation.current.splice(operatorIndex - 1, 3, runningTotal);
+          }
+
 
           // This is to go through the indeces in the operatorMap and shift them since the subprblem has been replaced by the solved value,
           // shortening the equationArray, hence changing the indeces of the remaining operators
