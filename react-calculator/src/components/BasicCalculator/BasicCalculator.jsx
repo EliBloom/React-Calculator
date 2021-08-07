@@ -139,7 +139,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
    */
   function solveParenthesisSubEquations() {
     const openeningParenthesisArr = [];
-    const subEquationIndexes = [];
+    // const subEquationIndexes = [];
     if (!equation.current.includes("(")) {
       return;
     } else {
@@ -155,12 +155,12 @@ export default function BasicCalculator({ errorMessageCallback }) {
         if (equation.current[a] === ")") {
           let openingParentheses = openeningParenthesisArr.pop();
           // the characters from equation that are bewtween the opening and closing parentheses
-          let subEquation = equation.current.slice(openingParentheses + 1, a);
+          // let subEquation = equation.current.slice(openingParentheses + 1, a);
           // this is to get the indexes of those characters above that are between the parentheses.
-          for (let index of equation.current.keys()) {
-            if (index > openingParentheses && index < a)
-              subEquationIndexes.push(index);
-          }
+          // for (let index of equation.current.keys()) {
+          //   if (index > openingParentheses && index < a)
+          //     subEquationIndexes.push(index);
+          // }
 
           //looks like this portion couldbe abstracted out since the code is also used in calculate() with slight tweaks
           const operatorMapKeys = Object.keys(operatorMap.current);
@@ -182,9 +182,9 @@ export default function BasicCalculator({ errorMessageCallback }) {
                   const rightOperand = equation.current[operatorIndex + 1];
                   const operator = equation.current[operatorIndex];
                   runningTotal = performOperation(
-                    parseInt(leftOperand),
+                    parseFloat(leftOperand),
                     operator,
-                    parseInt(rightOperand)
+                    parseFloat(rightOperand)
                   );
 
                   // // Check to see if the character to the left of opening parentheses is the same as one of the characters in the math functions
@@ -193,9 +193,11 @@ export default function BasicCalculator({ errorMessageCallback }) {
                   // }
 
                   // make sure that there is only one subequation between the paranthesis
+                  // WRONG, a is still not being properly set
                   if (a - openingParentheses === 4) {
                     // Used to keep track of the sub equation idexes, including opening/closin parentheses.
                     const subEquationSpan = a - openingParentheses + 1;
+                    // rebase a since the splice is making the array shorter
                     a = a - subEquationSpan;
                     //replace the sub equation, e.g. "1+1", with the solved value, 2
                     equation.current.splice(
@@ -203,6 +205,27 @@ export default function BasicCalculator({ errorMessageCallback }) {
                       subEquationSpan,
                       runningTotal
                     );
+                    console.log(equation.current);
+                  }
+                  // if not, replace just the 1+1 portion rather than also taking out parentheses
+                  else {
+                    if (
+                      "^sqrtsinloglncostan".includes(
+                        equation.current[operatorIndex]
+                      )
+                    ) {
+                      equation.current.splice(operatorIndex, 2, runningTotal);
+                      a = a - 1;
+                      console.log(equation.current);
+                    } else {
+                      equation.current.splice(
+                        operatorIndex - 1,
+                        a - openingParentheses,
+                        runningTotal
+                      );
+                      a = a - 2;
+                      console.log(equation.current);
+                    }
                   }
 
                   //reset operator map since all of these are now wrong due to the removal of parentheses characters
@@ -216,7 +239,9 @@ export default function BasicCalculator({ errorMessageCallback }) {
                   // This is to go through the indeces in the operatorMap and shift them since the subproblem has been replaced by the solved value,
                   // shortening the equationArray, hence changing the indeces of the remaining operators
                   for (let index of equation.current.keys()) {
-                    if ("^sqrtsinloglncostan".includes(equation.current[index])) {
+                    if (
+                      "^sqrtsinloglncostan".includes(equation.current[index])
+                    ) {
                       operatorMap.current["^sqrtsinloglncostan"].push(index);
                     }
                     if ("*/x÷%".includes(equation.current[index])) {
@@ -295,9 +320,8 @@ export default function BasicCalculator({ errorMessageCallback }) {
               parseFloat(rightOperand)
             );
             equation.current.splice(operatorIndex, 2, runningTotal);
-            console.log(equation.current)
-          }
-          else {
+            console.log(equation.current);
+          } else {
             const leftOperand = equation.current[operatorIndex - 1];
             const rightOperand = equation.current[operatorIndex + 1];
             // const operator = equation.current[operatorIndex];
@@ -310,7 +334,6 @@ export default function BasicCalculator({ errorMessageCallback }) {
             //replace the sub equation, e.g. "1+1", with the solved value, 2
             equation.current.splice(operatorIndex - 1, 3, runningTotal);
           }
-
 
           // This is to go through the indeces in the operatorMap and shift them since the subprblem has been replaced by the solved value,
           // shortening the equationArray, hence changing the indeces of the remaining operators

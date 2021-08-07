@@ -36,7 +36,6 @@ describe("Basic Calculator Test", () => {
         ")",
         "+",
         "-",
-        "x",
         "AC",
         "÷",
         ".",
@@ -110,27 +109,101 @@ describe("Basic Calculator Test", () => {
     let equalsButton;
     let openingParenthesesButton;
     let closingParenthesesButton;
+    let logButton;
+    let cosButton;
+    let sinButton;
+    let tanButton;
+    let powerButton;
+    let lnButton;
+    let piButton;
+    let eulersButton;
+    let squareRootButton;
 
     beforeEach(() => {
-      oneButton = screen.getByText("1");
-      twoButton = screen.getByText("2");
-      threeButton = screen.getByText("3");
-      fourButton = screen.getByText("4");
-      fiveButton = screen.getByText("5");
-      sixButton = screen.getByText("6");
-      sevenButton = screen.getByText("7");
-      eightButton = screen.getByText("8");
-      nineButton = screen.getByText("9");
-      zeroButton = screen.getByText("0");
-      plusButton = screen.getByText("+");
-      minusButton = screen.getByText("-");
-      multiplyButton = screen.getByText("x");
-      divideButton = screen.getByText("÷");
-      modulusButton = screen.getByText("%");
-      decimalButton = screen.getByText(".");
-      equalsButton = screen.getByText("=");
-      openingParenthesesButton = screen.getByText("(");
-      closingParenthesesButton = screen.getByText(")");
+      oneButton = screen.getByRole("button", {
+        name: /one-button/i,
+      });
+      twoButton = screen.getByRole("button", {
+        name: /two-button/i,
+      });
+      threeButton = screen.getByRole("button", {
+        name: /three-button/i,
+      });
+      fourButton = screen.getByRole("button", {
+        name: /four-button/i,
+      });
+      fiveButton = screen.getByRole("button", {
+        name: /five-button/i,
+      });
+      sixButton = screen.getByRole("button", {
+        name: /six-button/i,
+      });
+      sevenButton = screen.getByRole("button", {
+        name: /seven-button/i,
+      });
+      eightButton = screen.getByRole("button", {
+        name: /eight-button/i,
+      });
+      nineButton = screen.getByRole("button", {
+        name: /nine-button/i,
+      });
+      zeroButton = screen.getByRole("button", {
+        name: /zero-button/i,
+      });
+      plusButton = screen.getByRole("button", {
+        name: /plus-button/i,
+      });
+      minusButton = screen.getByRole("button", {
+        name: /minus-button/i,
+      });
+      multiplyButton = screen.getByRole("button", {
+        name: /multiply-button/i,
+      });
+      divideButton = screen.getByRole("button", {
+        name: /divide-button/i,
+      });
+      modulusButton = screen.getByRole("button", {
+        name: /modulus-button/i,
+      });
+      decimalButton = screen.getByRole("button", {
+        name: /decimal-button/i,
+      });
+      equalsButton = screen.getByRole("button", {
+        name: /equals-button/i,
+      });
+      openingParenthesesButton = screen.getByRole("button", {
+        name: /opening-parenthesis-button/i,
+      });
+      closingParenthesesButton = screen.getByRole("button", {
+        name: /closing-parenthesis-button/i,
+      });
+      logButton = screen.getByRole("button", {
+        name: /log-button/i,
+      });
+      cosButton = screen.getByRole("button", {
+        name: /cos-button/i,
+      });
+      sinButton = screen.getByRole("button", {
+        name: /sin-button/i,
+      });
+      tanButton = screen.getByRole("button", {
+        name: /tangent-button/i,
+      });
+      powerButton = screen.getByRole("button", {
+        name: /power-button/i,
+      });
+      lnButton = screen.getByRole("button", {
+        name: /natural-log-button/i,
+      });
+      piButton = screen.getByRole("button", {
+        name: /pi-button/i,
+      });
+      eulersButton = screen.getByRole("button", {
+        name: /eulers-button/i,
+      });
+      squareRootButton = screen.getByRole("button", {
+        name: /square-root-button/i,
+      });
     });
 
     describe("Addition Functionality", () => {
@@ -439,6 +512,8 @@ describe("Basic Calculator Test", () => {
         fireEvent.click(twoButton);
         fireEvent.click(plusButton);
         fireEvent.click(threeButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(fourButton);
         fireEvent.click(closingParenthesesButton);
         fireEvent.click(multiplyButton);
         fireEvent.click(twoButton);
@@ -453,7 +528,58 @@ describe("Basic Calculator Test", () => {
           name: /basic-calculator-display/i,
         });
 
-        expect(display.value).toEqual("9");
+        expect(display.value).toEqual("1.28571428571");
+      });
+    });
+
+    // 2x(3+cos(2-6))
+    describe("Mathematical Functions", () => {
+      test("Simple usage of parentheses", async () => {
+        fireEvent.click(twoButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(twoButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(eightButton);
+        fireEvent.click(closingParenthesesButton);
+        fireEvent.click(equalsButton);
+
+        const display = screen.getByRole("textbox", {
+          name: /basic-calculator-display/i,
+        });
+
+        expect(display.value).toEqual("20");
+      });
+
+      test("Advanced usage of parentheses", async () => {
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(twoButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(oneButton);
+        fireEvent.click(fiveButton);
+        fireEvent.click(divideButton);
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(twoButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(threeButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(fourButton);
+        fireEvent.click(closingParenthesesButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(twoButton);
+        fireEvent.click(closingParenthesesButton);
+        fireEvent.click(minusButton);
+        fireEvent.click(threeButton);
+        fireEvent.click(closingParenthesesButton);
+
+        fireEvent.click(equalsButton);
+
+        const display = screen.getByRole("textbox", {
+          name: /basic-calculator-display/i,
+        });
+
+        expect(display.value).toEqual("1.28571428571");
       });
     });
   });
