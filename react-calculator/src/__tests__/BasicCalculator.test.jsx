@@ -1,7 +1,12 @@
 import React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import BasicCalculator from "../components/BasicCalculator/BasicCalculator";
-import { render, fireEvent, screen } from "@testing-library/react";
+import {
+  render,
+  fireEvent,
+  screen,
+  waitForElementToBeRemoved,
+} from "@testing-library/react";
 
 describe("Basic Calculator Test", () => {
   beforeEach(() => render(<BasicCalculator />));
@@ -19,7 +24,7 @@ describe("Basic Calculator Test", () => {
     })),
   });
 
-  describe("Calculator UI Functionality", () => {
+  describe.only("Calculator UI Functionality", () => {
     test("The buttons of the Basic Calculator should be rendered", () => {
       const onScreenSymbols = [
         "0",
@@ -206,7 +211,7 @@ describe("Basic Calculator Test", () => {
       });
     });
 
-    describe("Addition Functionality", () => {
+    describe.only("Addition Functionality", () => {
       test("Simple addition calculation", async () => {
         fireEvent.click(oneButton);
         fireEvent.click(plusButton);
@@ -259,7 +264,7 @@ describe("Basic Calculator Test", () => {
       });
     });
 
-    describe("Subtraction Functionality", () => {
+    describe.only("Subtraction Functionality", () => {
       test("Simple subtraction calculation", async () => {
         fireEvent.click(oneButton);
         fireEvent.click(minusButton);
@@ -312,7 +317,7 @@ describe("Basic Calculator Test", () => {
       });
     });
 
-    describe("Addition and Subtraction Combination Functionality", () => {
+    describe.only("Addition and Subtraction Combination Functionality", () => {
       test("Simple subtration and addition calculation", async () => {
         fireEvent.click(oneButton);
         fireEvent.click(twoButton);
@@ -358,7 +363,7 @@ describe("Basic Calculator Test", () => {
       });
     });
 
-    describe("Multiplication Functionality", () => {
+    describe.only("Multiplication Functionality", () => {
       test("Simple multiplication calculation", async () => {
         fireEvent.click(twoButton);
         fireEvent.click(multiplyButton);
@@ -400,7 +405,7 @@ describe("Basic Calculator Test", () => {
       });
     });
 
-    describe("Division Functionality", () => {
+    describe.only("Division Functionality", () => {
       test("Simple division calculation", async () => {
         fireEvent.click(twoButton);
         fireEvent.click(zeroButton);
@@ -436,7 +441,7 @@ describe("Basic Calculator Test", () => {
       });
     });
 
-    describe("Modulus Functionality", () => {
+    describe.only("Modulus Functionality", () => {
       test("Simple modulus calculation", async () => {
         fireEvent.click(twoButton);
         fireEvent.click(threeButton);
@@ -453,7 +458,7 @@ describe("Basic Calculator Test", () => {
       });
     });
 
-    describe("All Simple Operators Combined Functionality", () => {
+    describe.only("All Simple Operators Combined Functionality", () => {
       test("calculation with multiply, subtract, divide, and add should use proper order of operations", async () => {
         fireEvent.click(oneButton);
         fireEvent.click(twoButton);
@@ -483,7 +488,7 @@ describe("Basic Calculator Test", () => {
     });
 
     describe("Parentheses Functionality", () => {
-      test("Simple usage of parentheses", async () => {
+      test.only("Simple usage of parentheses", async () => {
         fireEvent.click(twoButton);
         fireEvent.click(multiplyButton);
         fireEvent.click(openingParenthesesButton);
@@ -500,7 +505,7 @@ describe("Basic Calculator Test", () => {
         expect(display.value).toEqual("20");
       });
 
-      test("Advanced usage of parentheses", async () => {
+      test.only("Advanced usage of parentheses", async () => {
         fireEvent.click(openingParenthesesButton);
         fireEvent.click(twoButton);
         fireEvent.click(multiplyButton);
@@ -521,6 +526,10 @@ describe("Basic Calculator Test", () => {
         fireEvent.click(minusButton);
         fireEvent.click(threeButton);
         fireEvent.click(closingParenthesesButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(nineButton);
+        fireEvent.click(minusButton);
+        fireEvent.click(sevenButton);
 
         fireEvent.click(equalsButton);
 
@@ -528,58 +537,34 @@ describe("Basic Calculator Test", () => {
           name: /basic-calculator-display/i,
         });
 
-        expect(display.value).toEqual("1.28571428571");
+        expect(display.value).toEqual("4.571428571428569");
       });
+
+      //This is failing: (2x(15/(2+3x4)x2)-3)*9-7
+      //when debugging play into the brackets of a - openingParentheses === 4 twice
     });
 
     // 2x(3+cos(2-6))
     describe("Mathematical Functions", () => {
-      test("Simple usage of parentheses", async () => {
+      test("Simple usage of cosine mathematical function", async () => {
         fireEvent.click(twoButton);
         fireEvent.click(multiplyButton);
         fireEvent.click(openingParenthesesButton);
-        fireEvent.click(twoButton);
-        fireEvent.click(plusButton);
-        fireEvent.click(eightButton);
-        fireEvent.click(closingParenthesesButton);
-        fireEvent.click(equalsButton);
-
-        const display = screen.getByRole("textbox", {
-          name: /basic-calculator-display/i,
-        });
-
-        expect(display.value).toEqual("20");
-      });
-
-      test("Advanced usage of parentheses", async () => {
-        fireEvent.click(openingParenthesesButton);
-        fireEvent.click(twoButton);
-        fireEvent.click(multiplyButton);
-        fireEvent.click(openingParenthesesButton);
-        fireEvent.click(oneButton);
-        fireEvent.click(fiveButton);
-        fireEvent.click(divideButton);
-        fireEvent.click(openingParenthesesButton);
-        fireEvent.click(twoButton);
-        fireEvent.click(plusButton);
         fireEvent.click(threeButton);
-        fireEvent.click(multiplyButton);
-        fireEvent.click(fourButton);
-        fireEvent.click(closingParenthesesButton);
-        fireEvent.click(multiplyButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(cosButton);
         fireEvent.click(twoButton);
-        fireEvent.click(closingParenthesesButton);
         fireEvent.click(minusButton);
-        fireEvent.click(threeButton);
+        fireEvent.click(sixButton);
         fireEvent.click(closingParenthesesButton);
-
+        fireEvent.click(closingParenthesesButton);
         fireEvent.click(equalsButton);
 
         const display = screen.getByRole("textbox", {
           name: /basic-calculator-display/i,
         });
 
-        expect(display.value).toEqual("1.28571428571");
+        expect(display.value).toEqual("7.99512810052");
       });
     });
   });
