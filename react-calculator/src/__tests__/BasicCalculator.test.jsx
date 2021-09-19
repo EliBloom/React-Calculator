@@ -1,7 +1,13 @@
 import React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import BasicCalculator from "../components/BasicCalculator/BasicCalculator";
-import { render, fireEvent, screen } from "@testing-library/react";
+import {
+  render,
+  fireEvent,
+  screen,
+  waitForElementToBeRemoved,
+  waitFor,
+} from "@testing-library/react";
 
 describe("Basic Calculator Test", () => {
   beforeEach(() => render(<BasicCalculator />));
@@ -36,7 +42,6 @@ describe("Basic Calculator Test", () => {
         ")",
         "+",
         "-",
-        "x",
         "AC",
         "÷",
         ".",
@@ -110,27 +115,101 @@ describe("Basic Calculator Test", () => {
     let equalsButton;
     let openingParenthesesButton;
     let closingParenthesesButton;
+    let logButton;
+    let cosButton;
+    let sinButton;
+    let tanButton;
+    let powerButton;
+    let lnButton;
+    let piButton;
+    let eulersButton;
+    let squareRootButton;
 
     beforeEach(() => {
-      oneButton = screen.getByText("1");
-      twoButton = screen.getByText("2");
-      threeButton = screen.getByText("3");
-      fourButton = screen.getByText("4");
-      fiveButton = screen.getByText("5");
-      sixButton = screen.getByText("6");
-      sevenButton = screen.getByText("7");
-      eightButton = screen.getByText("8");
-      nineButton = screen.getByText("9");
-      zeroButton = screen.getByText("0");
-      plusButton = screen.getByText("+");
-      minusButton = screen.getByText("-");
-      multiplyButton = screen.getByText("x");
-      divideButton = screen.getByText("÷");
-      modulusButton = screen.getByText("%");
-      decimalButton = screen.getByText(".");
-      equalsButton = screen.getByText("=");
-      openingParenthesesButton = screen.getByText("(");
-      closingParenthesesButton = screen.getByText(")");
+      oneButton = screen.getByRole("button", {
+        name: /one-button/i,
+      });
+      twoButton = screen.getByRole("button", {
+        name: /two-button/i,
+      });
+      threeButton = screen.getByRole("button", {
+        name: /three-button/i,
+      });
+      fourButton = screen.getByRole("button", {
+        name: /four-button/i,
+      });
+      fiveButton = screen.getByRole("button", {
+        name: /five-button/i,
+      });
+      sixButton = screen.getByRole("button", {
+        name: /six-button/i,
+      });
+      sevenButton = screen.getByRole("button", {
+        name: /seven-button/i,
+      });
+      eightButton = screen.getByRole("button", {
+        name: /eight-button/i,
+      });
+      nineButton = screen.getByRole("button", {
+        name: /nine-button/i,
+      });
+      zeroButton = screen.getByRole("button", {
+        name: /zero-button/i,
+      });
+      plusButton = screen.getByRole("button", {
+        name: /plus-button/i,
+      });
+      minusButton = screen.getByRole("button", {
+        name: /minus-button/i,
+      });
+      multiplyButton = screen.getByRole("button", {
+        name: /multiply-button/i,
+      });
+      divideButton = screen.getByRole("button", {
+        name: /divide-button/i,
+      });
+      modulusButton = screen.getByRole("button", {
+        name: /modulus-button/i,
+      });
+      decimalButton = screen.getByRole("button", {
+        name: /decimal-button/i,
+      });
+      equalsButton = screen.getByRole("button", {
+        name: /equals-button/i,
+      });
+      openingParenthesesButton = screen.getByRole("button", {
+        name: /opening-parenthesis-button/i,
+      });
+      closingParenthesesButton = screen.getByRole("button", {
+        name: /closing-parenthesis-button/i,
+      });
+      logButton = screen.getByRole("button", {
+        name: /log-button/i,
+      });
+      cosButton = screen.getByRole("button", {
+        name: /cos-button/i,
+      });
+      sinButton = screen.getByRole("button", {
+        name: /sin-button/i,
+      });
+      tanButton = screen.getByRole("button", {
+        name: /tangent-button/i,
+      });
+      powerButton = screen.getByRole("button", {
+        name: /power-button/i,
+      });
+      lnButton = screen.getByRole("button", {
+        name: /natural-log-button/i,
+      });
+      piButton = screen.getByRole("button", {
+        name: /pi-button/i,
+      });
+      eulersButton = screen.getByRole("button", {
+        name: /eulers-button/i,
+      });
+      squareRootButton = screen.getByRole("button", {
+        name: /square-root-button/i,
+      });
     });
 
     describe("Addition Functionality", () => {
@@ -381,7 +460,7 @@ describe("Basic Calculator Test", () => {
     });
 
     describe("All Simple Operators Combined Functionality", () => {
-      test("calculation with multiply, subtract, divide, and add should use proper order of operations", async () => {
+      test("calculation with multiply, subtract, divide, and add; should use proper order of operations", async () => {
         fireEvent.click(oneButton);
         fireEvent.click(twoButton);
         fireEvent.click(plusButton);
@@ -439,6 +518,8 @@ describe("Basic Calculator Test", () => {
         fireEvent.click(twoButton);
         fireEvent.click(plusButton);
         fireEvent.click(threeButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(fourButton);
         fireEvent.click(closingParenthesesButton);
         fireEvent.click(multiplyButton);
         fireEvent.click(twoButton);
@@ -446,6 +527,10 @@ describe("Basic Calculator Test", () => {
         fireEvent.click(minusButton);
         fireEvent.click(threeButton);
         fireEvent.click(closingParenthesesButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(nineButton);
+        fireEvent.click(minusButton);
+        fireEvent.click(sevenButton);
 
         fireEvent.click(equalsButton);
 
@@ -453,7 +538,188 @@ describe("Basic Calculator Test", () => {
           name: /basic-calculator-display/i,
         });
 
-        expect(display.value).toEqual("9");
+        expect(display.value).toEqual("4.571428571428569");
+      });
+    });
+
+    describe("Mathematical Functions", () => {
+      describe("Cosine Functions", () => {
+        test("Simple usage of cosine mathematical function", async () => {
+          fireEvent.click(cosButton);
+          fireEvent.click(threeButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(equalsButton);
+
+          const display = screen.getByRole("textbox", {
+            name: /basic-calculator-display/i,
+          });
+
+          expect(display.value).toEqual("0.9986295347545738");
+        });
+
+        test("Advanced usage of cosine mathematical function", async () => {
+          fireEvent.click(twoButton);
+          fireEvent.click(multiplyButton);
+          fireEvent.click(openingParenthesesButton);
+          fireEvent.click(threeButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(cosButton);
+          fireEvent.click(twoButton);
+          fireEvent.click(minusButton);
+          fireEvent.click(sixButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(equalsButton);
+
+          const display = screen.getByRole("textbox", {
+            name: /basic-calculator-display/i,
+          });
+
+          expect(display.value).toEqual("7.995128100519649");
+        });
+      });
+
+      describe("Sine Functions", () => {
+        test("Simple usage of sine mathematical function", async () => {
+          fireEvent.click(twoButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(sinButton);
+          fireEvent.click(threeButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(fourButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(equalsButton);
+
+          const display = screen.getByRole("textbox", {
+            name: /basic-calculator-display/i,
+          });
+
+          expect(display.value).toEqual("2.1218693434051477");
+        });
+
+        //2+(3*(sin(2+4*2)))-sin(4)
+        test("Advanced usage of sine mathematical function", async () => {
+          fireEvent.click(twoButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(openingParenthesesButton);
+          fireEvent.click(threeButton);
+          fireEvent.click(multiplyButton);
+          fireEvent.click(openingParenthesesButton);
+          fireEvent.click(sinButton);
+          fireEvent.click(twoButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(fourButton);
+          fireEvent.click(multiplyButton);
+          fireEvent.click(twoButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(minusButton);
+          fireEvent.click(sinButton);
+          fireEvent.click(fourButton);
+          fireEvent.click(closingParenthesesButton);
+
+          fireEvent.click(equalsButton);
+
+          const display = screen.getByRole("textbox", {
+            name: /basic-calculator-display/i,
+          });
+
+          expect(display.value).toEqual("2.451188059256666");
+        });
+      });
+
+      describe("Tangent Functions", () => {
+        test("Simple usage of tangent mathematical function", async () => {
+          fireEvent.click(tanButton);
+          fireEvent.click(threeButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(equalsButton);
+
+          const display = screen.getByRole("textbox", {
+            name: /basic-calculator-display/i,
+          });
+
+          expect(display.value).toEqual("0.0524077792830412");
+        });
+        //(3 × 2 + (4 ÷ tan(3 × tan(5 + 1)) - 6) ÷ 2)+4
+        test("Advanced usage of tangent mathematical function", async () => {
+          fireEvent.click(openingParenthesesButton);
+          fireEvent.click(threeButton);
+          fireEvent.click(multiplyButton);
+          fireEvent.click(twoButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(openingParenthesesButton);
+          fireEvent.click(fourButton);
+          fireEvent.click(divideButton);
+          fireEvent.click(tanButton);
+          fireEvent.click(threeButton);
+          fireEvent.click(multiplyButton);
+          fireEvent.click(tanButton);
+
+          fireEvent.click(fiveButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(oneButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(minusButton);
+          fireEvent.click(sixButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(divideButton);
+          fireEvent.click(twoButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(fourButton);
+
+          fireEvent.click(equalsButton);
+
+          const display = screen.getByRole("textbox", {
+            name: /basic-calculator-display/i,
+          });
+
+          expect(display.value).toEqual("370.4182831468295");
+        });
+      });
+
+      describe("Square Root Functions", () => {
+        // test("Simple usage of square root mathematical function", async () => {
+        //   fireEvent.click(squareRootButton);
+        //   fireEvent.click(nineButton);
+        //   fireEvent.click(closingParenthesesButton);
+        //   fireEvent.click(equalsButton);
+        //   const display = screen.getByRole("textbox", {
+        //     name: /basic-calculator-display/i,
+        //   });
+        //   expect(display.value).toEqual("3");
+        // });
+        //2x(3+sqr(25-13)-6xsqr(81))
+        // test("Advanced usage of square root+ mathematical function", async () => {
+        //   fireEvent.click(twoButton);
+        //   fireEvent.click(multiplyButton);
+        //   fireEvent.click(openingParenthesesButton);
+        //   fireEvent.click(threeButton);
+        //   fireEvent.click(plusButton);
+        //   fireEvent.click(squareRootButton);
+        //   fireEvent.click(twoButton);
+        //   fireEvent.click(fiveButton);
+        //   fireEvent.click(minusButton);
+        //   fireEvent.click(oneButton);
+        //   fireEvent.click(threeButton);
+        //   fireEvent.click(closingParenthesesButton);
+        //   fireEvent.click(minusButton);
+        //   fireEvent.click(sixButton);
+        //   fireEvent.click(multiplyButton);
+        //   fireEvent.click(squareRootButton);
+        //   fireEvent.click(eightButton);
+        //   fireEvent.click(oneButton);
+        //   fireEvent.click(closingParenthesesButton);
+        //   fireEvent.click(closingParenthesesButton);
+        //   fireEvent.click(equalsButton);
+        //   const display = screen.getByRole("textbox", {
+        //     name: /basic-calculator-display/i,
+        //   });
+        //   expect(display.value).toEqual("-95.0717967697");
+        // });
       });
     });
   });

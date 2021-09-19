@@ -12,6 +12,7 @@ export default function ButtonPad({
   allClearCallback,
   piCallback,
   eulersCallback,
+  mathFunctionCallback,
 }) {
   const buttonStyle = { padding: "8px", margin: "2px", width: "80px" };
 
@@ -27,6 +28,7 @@ export default function ButtonPad({
       <Row>
         <Col>
           <Button
+            aria-label={"opening-parenthesis-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => operatorCallback("(")}
@@ -36,6 +38,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"closing-parenthesis-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => operatorCallback(")")}
@@ -45,6 +48,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"modulus-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => operatorCallback("%")}
@@ -54,6 +58,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"all-clear-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => allClearCallback()}
@@ -63,6 +68,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"pi-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => piCallback()}
@@ -70,10 +76,21 @@ export default function ButtonPad({
             π
           </Button>
         </Col>
+        <Col>
+          <Button
+            aria-label={"TEST"}
+            style={buttonStyle}
+            type="primary"
+            onClick={() => mathFunctionCallback("log")}
+          >
+            TEST
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
           <Button
+            aria-label={"zero-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback("0")}
@@ -83,6 +100,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"decimal-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback(".")}
@@ -92,6 +110,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"equals-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => equalsCallback()}
@@ -101,6 +120,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"plus-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => operatorCallback("+")}
@@ -110,6 +130,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"power-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => operatorCallback("^")}
@@ -117,10 +138,21 @@ export default function ButtonPad({
             x<sup>y</sup>
           </Button>
         </Col>
+        <Col>
+          <Button
+            aria-label={"natural-log-button"}
+            style={buttonStyle}
+            type="primary"
+            onClick={() => mathFunctionCallback("ln")}
+          >
+            ln
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
           <Button
+            aria-label={"one-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback("1")}
@@ -130,6 +162,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"two-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback("2")}
@@ -139,6 +172,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"three-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback("3")}
@@ -148,6 +182,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"minus-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => operatorCallback("-")}
@@ -157,6 +192,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"eulers-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => eulersCallback()}
@@ -164,10 +200,21 @@ export default function ButtonPad({
             e
           </Button>
         </Col>
+        <Col>
+          <Button
+            aria-label={"cos-button"}
+            style={buttonStyle}
+            type="primary"
+            onClick={() => mathFunctionCallback("cos")}
+          >
+            cos
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
           <Button
+            aria-label={"four-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback("4")}
@@ -177,6 +224,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"five-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback("5")}
@@ -186,6 +234,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"six-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback("6")}
@@ -195,6 +244,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"multiply-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => operatorCallback("x")}
@@ -204,6 +254,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"square-root-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => operatorCallback("sqrt")}
@@ -211,10 +262,21 @@ export default function ButtonPad({
             √
           </Button>
         </Col>
+        <Col>
+          <Button
+            aria-label={"sin-button"}
+            style={buttonStyle}
+            type="primary"
+            onClick={() => mathFunctionCallback("sin")}
+          >
+            sin
+          </Button>
+        </Col>
       </Row>
       <Row>
         <Col>
           <Button
+            aria-label={"seven-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback("7")}
@@ -224,6 +286,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"eight-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback("8")}
@@ -233,6 +296,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"nine-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => digitCallback("9")}
@@ -242,6 +306,7 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"divide-button"}
             style={buttonStyle}
             type="primary"
             onClick={() => operatorCallback("÷")}
@@ -251,11 +316,22 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
+            aria-label={"not implemented"}
             style={buttonStyle}
             type="primary"
             onClick={() => allClearCallback()}
           >
-            Test
+            EXP
+          </Button>
+        </Col>
+        <Col>
+          <Button
+            aria-label={"tangent-button"}
+            style={buttonStyle}
+            type="primary"
+            onClick={() => mathFunctionCallback("tan")}
+          >
+            tan
           </Button>
         </Col>
       </Row>
