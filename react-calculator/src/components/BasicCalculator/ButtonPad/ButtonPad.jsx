@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { Row, Col, Button } from "antd";
+import { ArrowLeftOutlined } from "@ant-design/icons";
 
 /**
  * This class handles the buttons that the user can click in order to manually enter equations.
@@ -13,6 +14,7 @@ export default function ButtonPad({
   piCallback,
   eulersCallback,
   mathFunctionCallback,
+  backspaceCallback,
 }) {
   const buttonStyle = { padding: "8px", margin: "2px", width: "80px" };
 
@@ -78,12 +80,12 @@ export default function ButtonPad({
         </Col>
         <Col>
           <Button
-            aria-label={"TEST"}
+            aria-label={"backspace-button"}
             style={buttonStyle}
             type="primary"
-            onClick={() => mathFunctionCallback("log")}
+            onClick={() => backspaceCallback()}
           >
-            TEST
+            <ArrowLeftOutlined />
           </Button>
         </Col>
       </Row>
