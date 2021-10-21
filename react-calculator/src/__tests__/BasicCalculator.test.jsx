@@ -700,32 +700,32 @@ describe("Basic Calculator Test", () => {
       });
 
       describe("Deletion Functionality", () => {
-        test("Delete button should remove a digit", async () => {
-          fireEvent.click(twoButton);
-          fireEvent.click(plusButton);
-          fireEvent.click(threeButton);
-          fireEvent.click(backspaceButton);
-          fireEvent.click(sixButton);
-          fireEvent.click(equalsButton);
-          const display = screen.getByRole("textbox", {
-            name: /basic-calculator-display/i,
-          });
-          expect(display.value).toEqual("8");
-        });
-        test("Delete button should remove an operator", async () => {
-          fireEvent.click(twoButton);
-          fireEvent.click(plusButton);
-          fireEvent.click(fourButton);
-          fireEvent.click(backspaceButton);
-          fireEvent.click(backspaceButton);
-          fireEvent.click(multiplyButton);
-          fireEvent.click(fourButton);
-          fireEvent.click(equalsButton);
-          const display = screen.getByRole("textbox", {
-            name: /basic-calculator-display/i,
-          });
-          expect(display.value).toEqual("8");
-        });
+        // test("Delete button should remove a digit", async () => {
+        //   fireEvent.click(twoButton);
+        //   fireEvent.click(plusButton);
+        //   fireEvent.click(threeButton);
+        //   fireEvent.click(backspaceButton);
+        //   fireEvent.click(sixButton);
+        //   fireEvent.click(equalsButton);
+        //   const display = screen.getByRole("textbox", {
+        //     name: /basic-calculator-display/i,
+        //   });
+        //   expect(display.value).toEqual("8");
+        // });
+        // test("Delete button should remove an operator", async () => {
+        //   fireEvent.click(twoButton);
+        //   fireEvent.click(plusButton);
+        //   fireEvent.click(fourButton);
+        //   fireEvent.click(backspaceButton);
+        //   fireEvent.click(backspaceButton);
+        //   fireEvent.click(multiplyButton);
+        //   fireEvent.click(fourButton);
+        //   fireEvent.click(equalsButton);
+        //   const display = screen.getByRole("textbox", {
+        //     name: /basic-calculator-display/i,
+        //   });
+        //   expect(display.value).toEqual("8");
+        // });
         test("Delete button should remove pi", async () => {
           fireEvent.click(twoButton);
           fireEvent.click(plusButton);
