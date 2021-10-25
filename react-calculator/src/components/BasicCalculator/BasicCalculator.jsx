@@ -556,7 +556,17 @@ export default function BasicCalculator({ errorMessageCallback }) {
 
   return (
     <div style={basicCalculatorStyle}>
-      <Display expression={equationString} />
+      <Display
+        expression={equationString}
+        digitCallback={handleDigitCallback}
+        equalsCallback={handleEqualsCallback}
+        operatorCallback={handleOperatorCallback}
+        allClearCallback={handleAllClearCallback}
+        piCallback={handlePiCallback}
+        eulersCallback={handleEulersCallback}
+        mathFunctionCallback={handleMathFunctionCallback}
+        backspaceCallback={handleBackspaceCallback}
+      />
       <ButtonPad
         digitCallback={handleDigitCallback}
         equalsCallback={handleEqualsCallback}

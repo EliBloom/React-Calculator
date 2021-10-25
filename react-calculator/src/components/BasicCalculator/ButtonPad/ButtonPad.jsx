@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback, useReducer } from "react";
 import { Row, Col, Button } from "antd";
 import { ArrowLeftOutlined } from "@ant-design/icons";
 
@@ -18,13 +18,6 @@ export default function ButtonPad({
 }) {
   const buttonStyle = { padding: "8px", margin: "2px", width: "80px" };
 
-  function handleKeyDown(event) {
-    console.log(event);
-  }
-
-  useEffect(() => {
-    document.addEventListener("keydown", (event) => handleKeyDown(event));
-  });
   return (
     <>
       <Row>

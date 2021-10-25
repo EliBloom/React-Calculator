@@ -1,16 +1,9 @@
 import React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import BasicCalculator from "../components/BasicCalculator/BasicCalculator";
-import {
-  render,
-  fireEvent,
-  screen,
-  waitForElementToBeRemoved,
-  waitFor,
-} from "@testing-library/react";
+import { render, fireEvent, screen } from "@testing-library/react";
 
 describe("Basic Calculator Test", () => {
-  beforeEach(() => render(<BasicCalculator />));
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: jest.fn().mockImplementation((query) => ({
@@ -24,6 +17,8 @@ describe("Basic Calculator Test", () => {
       dispatchEvent: jest.fn(),
     })),
   });
+
+  beforeEach(() => render(<BasicCalculator />));
 
   describe("Calculator UI Functionality", () => {
     test("The buttons of the Basic Calculator should be rendered", () => {
