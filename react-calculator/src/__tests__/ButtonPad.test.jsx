@@ -21,7 +21,7 @@ describe("Calculator Button Pad Test", () => {
     })),
   });
 
-  describe("The button pad should be rendered on its own", () => {
+  test("The button pad should be rendered on its own", () => {
     render(<ButtonPad />);
     const onScreenSymbols = [
       "0",
@@ -54,51 +54,6 @@ describe("Calculator Button Pad Test", () => {
     ];
     onScreenSymbols.forEach((symbol) => {
       expect(screen.getByText(symbol)).toBeInTheDocument();
-    });
-  });
-
-  describe("The button pad should communicate with display and calculator", () => {
-    beforeEach(() => render(<BasicCalculator />));
-
-    test("Display should be able to take digit", () => {
-      //   let buttonPad = screen.getByRole("button", {
-      //     name: /opening-parenthesis-button/i,
-      //   });
-    });
-
-    test("The buttons of the Basic Calculator should be rendered", () => {
-      const onScreenSymbols = [
-        "0",
-        "1",
-        "2",
-        "3",
-        "4",
-        "5",
-        "6",
-        "7",
-        "8",
-        "9",
-        "(",
-        ")",
-        "+",
-        "-",
-        "AC",
-        "÷",
-        ".",
-        "%",
-        "(",
-        ")",
-        "cos",
-        "tan",
-        "sin",
-        "e",
-        "ln",
-        "π",
-        "EXP",
-      ];
-      onScreenSymbols.forEach((symbol) => {
-        expect(screen.getByText(symbol)).toBeInTheDocument();
-      });
     });
   });
 });

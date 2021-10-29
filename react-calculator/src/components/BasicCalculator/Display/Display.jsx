@@ -53,7 +53,6 @@ export function Display({
   // }
 
   function handleInputChange(userInput) {
-    console.log(userInput);
     if (userInput === "") {
     }
     handleKeyDown(userInput.slice(-1));
@@ -145,7 +144,6 @@ export function Display({
           handleInputChange(userInputEvent.target.value);
         }}
         onKeyDown={(event) => {
-          console.log(event.key);
           if (event.key === "Enter" || event.key === "Backspace") {
             handleKeyDown(event.key);
           }
