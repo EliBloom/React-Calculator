@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useReducer } from "react";
 import Display from "./Display";
 import ButtonPad from "./ButtonPad";
 
@@ -16,8 +16,14 @@ export default function BasicCalculator({ errorMessageCallback }) {
   let operand = useRef("");
   //an array of the equation tokenized
   let equation = useRef([]);
+  // used in the calculate function
   let isFirstParenthesis = useRef(true);
-
+  // string used to determine the last function call, used in backspaceCallback
+  let previousFunctionCalled = useRef("");
+  //helping variable for the backspace function, holds the previous operand
+  let previousOperand = useRef("");
+  //should create a stack where the keys are  the operation, inserted in the order in which the user enters them, and value will be the functionCall, e.g."handleDigitCallback", "handleOperatorCallback"
+  let callStack = useRef([]);
   //This is how the order of operations is determined, it stores the index of each operator
   let operatorMap = useRef({
     "(": [],
@@ -26,6 +32,8 @@ export default function BasicCalculator({ errorMessageCallback }) {
     "*/x÷%": [],
     "+-": [],
   });
+  // says that operand has been pushed onto equation
+  let isExpressionClosed = useRef(false);
 
   const basicCalculatorStyle = {
     justifyContent: "center",
@@ -39,6 +47,14 @@ export default function BasicCalculator({ errorMessageCallback }) {
    */
   function handleDigitCallback(digit) {
     operand.current += digit;
+    // used in backspace method
+    previousFunctionCalled.current = "handleDigitCallback";
+    previousOperand.current = operand.current;
+    callStack.current.push({
+      previousFunctionCalled: "handleDigitCallback",
+      value: digit,
+    });
+    isExpressionClosed.current = false;
 
     setEquationString(equationString + digit);
   }
@@ -50,12 +66,29 @@ export default function BasicCalculator({ errorMessageCallback }) {
    * @param operator - the mathematical operator symbol, e.g. +/*()
    */
   function handleOperatorCallback(operator) {
-    if (operand.current) {
+    if (
+      operand.current &&
+      // PI Value
+      previousOperand.current != "3.141592653589793" &&
+      // Euler's Constant Value
+      previousOperand.current != "2.718281828459045"
+    ) {
       equation.current.push(operand.current);
       equationIndex.current += 1;
     }
+
+    callStack.current.push({
+      previousFunctionCalled: "handleOperatorCallback",
+      value: operator,
+    });
+
+    //this is used for the backspace function
+    previousOperand.current = operand.current;
     //operand reset since the value is being pushed onto the equation array
     operand.current = "";
+    //used in backspace method
+    previousFunctionCalled.current = "handleOperatorCallback";
+    isExpressionClosed.current = true;
 
     equation.current.push(operator);
     setEquationString(equationString + operator);
@@ -74,6 +107,15 @@ export default function BasicCalculator({ errorMessageCallback }) {
    */
   function handlePiCallback() {
     operand.current += Math.PI;
+    equation.current.push(operand.current);
+    equationIndex.current += 1;
+    previousOperand.current = Math.PI;
+    callStack.current.push({
+      previousFunctionCalled: "handlePiCallback",
+      value: Math.PI,
+    });
+    // used in backspace  method
+    previousFunctionCalled.current = "handlePiCallback";
 
     setEquationString(equationString + "π");
   }
@@ -83,6 +125,15 @@ export default function BasicCalculator({ errorMessageCallback }) {
    */
   function handleEulersCallback() {
     operand.current += Math.E;
+    equation.current.push(operand.current);
+    equationIndex.current += 1;
+    previousOperand.current = Math.E;
+    callStack.current.push({
+      previousFunctionCalled: "handleEulersCallback",
+      value: Math.E,
+    });
+    // used in backspace  method
+    previousFunctionCalled.current = "handleEulersCallback";
 
     setEquationString(equationString + Math.E);
   }
@@ -93,11 +144,89 @@ export default function BasicCalculator({ errorMessageCallback }) {
    * @param functionName - the name of the math function being called.
    */
   function handleMathFunctionCallback(functionName) {
-    // equationIndex.current += 1;
     handleOperatorCallback(functionName);
     handleOperatorCallback("(");
+    // used in backspace  method
+    previousFunctionCalled.current = "handleMathFunctionCallback";
+    callStack.current.push({
+      previousFunctionCalled: "handleMathFunctionCallback",
+      value: functionName + "(",
+    });
 
     setEquationString(equationString + functionName + "(");
+  }
+
+  /**
+   * Callback for when the backspace button is pressed.
+   */
+  function handleBackspaceCallback() {
+    if (callStack.current.length > 0) {
+      // needs to be handled when everything has been deleted
+      let toBeDeleted = callStack.current.pop();
+      switch (previousFunctionCalled.current) {
+        //BUG: handleDigitCallback is still messed up when you delete, readd, delete what you added, and add again does not work
+        case "handleDigitCallback":
+          operand.current = operand.current.slice(0, -1);
+          setEquationString(equationString.slice(0, -1));
+          // if isExpressionIsClosed, operand has been pushed to equation, therefore it must be removed
+          if (isExpressionClosed.current) {
+            let length = equation.current.length - 1;
+            let equationOperand = equation.current[length];
+            equationOperand = equationOperand.slice(0, -1);
+            if (!equationOperand) {
+              // if equationOperand is empty, then the operand being deleted is one character, so we can just remove the whole element
+              equation.current = equation.current.slice(0, -1);
+              equationIndex.current -= 1;
+            } else {
+              // if equationOperand is not empty, then is is longer than one char, therefore just the last char should be spliced rather than remove the whole element
+              equation.current[length] = equationOperand;
+            }
+          }
+
+          break;
+        case "handleOperatorCallback":
+          equation.current = equation.current.slice(0, -1);
+          equationIndex.current -= 1;
+          let endingIndex = callStack.current.length - 1;
+          //retrieve and build the previous full operand
+          while (
+            !"sqrtsinloglncostan*/x÷%+-".includes(
+              callStack.current[endingIndex]?.value
+            ) &&
+            endingIndex >= 0
+          ) {
+            operand.current =
+              callStack.current[endingIndex]?.value + operand.current;
+            endingIndex--;
+          }
+          isExpressionClosed.current = true;
+          rebaseIndexes();
+          setEquationString(equationString.slice(0, -1));
+          break;
+        case "handlePiCallback":
+          equation.current = equation.current.slice(0, -1);
+          equationIndex.current--;
+          operand.current = "";
+          setEquationString(equation.current.join(""));
+          break;
+        case "handleEulersCallback":
+          equation.current = equation.current.slice(0, -1);
+          equationIndex.current--;
+          operand.current = "";
+          setEquationString(equation.current.join(""));
+          break;
+        case "handleMathFunctionCallback":
+          break;
+        default:
+          break;
+      }
+
+      // grab the next value for  previousFunctionCalled from the callStack
+      if (callStack.current.length > 0) {
+        previousFunctionCalled.current =
+          callStack.current.at(-1).previousFunctionCalled;
+      }
+    }
   }
 
   /**
@@ -105,7 +234,11 @@ export default function BasicCalculator({ errorMessageCallback }) {
    * mathematical expression.
    */
   function handleEqualsCallback() {
-    if (operand.current) {
+    if (
+      operand.current &&
+      previousOperand.current != "3.141592653589793" &&
+      previousOperand.current != "2.718281828459045"
+    ) {
       equation.current.push(operand.current);
       equationIndex.current += 1;
     }
@@ -170,7 +303,6 @@ export default function BasicCalculator({ errorMessageCallback }) {
     if (!equation.current.includes("(")) {
       return;
     } else {
-      // the variable "a" itself will mark the index of the closing parentheses
       outterMostLoop: for (
         let equationIndex = 0;
         equationIndex < equation.current.length;
@@ -424,7 +556,17 @@ export default function BasicCalculator({ errorMessageCallback }) {
 
   return (
     <div style={basicCalculatorStyle}>
-      <Display expression={equationString} />
+      <Display
+        expression={equationString}
+        digitCallback={handleDigitCallback}
+        equalsCallback={handleEqualsCallback}
+        operatorCallback={handleOperatorCallback}
+        allClearCallback={handleAllClearCallback}
+        piCallback={handlePiCallback}
+        eulersCallback={handleEulersCallback}
+        mathFunctionCallback={handleMathFunctionCallback}
+        backspaceCallback={handleBackspaceCallback}
+      />
       <ButtonPad
         digitCallback={handleDigitCallback}
         equalsCallback={handleEqualsCallback}
@@ -433,6 +575,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
         piCallback={handlePiCallback}
         eulersCallback={handleEulersCallback}
         mathFunctionCallback={handleMathFunctionCallback}
+        backspaceCallback={handleBackspaceCallback}
       />
     </div>
   );

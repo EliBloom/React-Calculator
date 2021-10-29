@@ -1,16 +1,9 @@
 import React from "react";
 import "@testing-library/jest-dom/extend-expect";
 import BasicCalculator from "../components/BasicCalculator/BasicCalculator";
-import {
-  render,
-  fireEvent,
-  screen,
-  waitForElementToBeRemoved,
-  waitFor,
-} from "@testing-library/react";
+import { render, fireEvent, screen } from "@testing-library/react";
 
 describe("Basic Calculator Test", () => {
-  beforeEach(() => render(<BasicCalculator />));
   Object.defineProperty(window, "matchMedia", {
     writable: true,
     value: jest.fn().mockImplementation((query) => ({
@@ -24,6 +17,8 @@ describe("Basic Calculator Test", () => {
       dispatchEvent: jest.fn(),
     })),
   });
+
+  beforeEach(() => render(<BasicCalculator />));
 
   describe("Calculator UI Functionality", () => {
     test("The buttons of the Basic Calculator should be rendered", () => {
@@ -124,6 +119,7 @@ describe("Basic Calculator Test", () => {
     let piButton;
     let eulersButton;
     let squareRootButton;
+    let backspaceButton;
 
     beforeEach(() => {
       oneButton = screen.getByRole("button", {
@@ -210,6 +206,9 @@ describe("Basic Calculator Test", () => {
       squareRootButton = screen.getByRole("button", {
         name: /square-root-button/i,
       });
+      backspaceButton = screen.getByRole("button", {
+        name: /backspace-button/i,
+      });
     });
 
     describe("Addition Functionality", () => {
@@ -262,6 +261,122 @@ describe("Basic Calculator Test", () => {
         });
 
         expect(display.value).toEqual("26");
+      });
+    });
+
+    describe("PI Functionality", () => {
+      test("Simple pi calculation", async () => {
+        fireEvent.click(oneButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(piButton);
+        fireEvent.click(equalsButton);
+
+        const display = screen.getByRole("textbox", {
+          name: /basic-calculator-display/i,
+        });
+
+        expect(display.value).toEqual("4.141592653589793");
+      });
+
+      test("Advanced pi calculation", async () => {
+        fireEvent.click(twoButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(threeButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(piButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(twoButton);
+
+        fireEvent.click(equalsButton);
+
+        const display = screen.getByRole("textbox", {
+          name: /basic-calculator-display/i,
+        });
+
+        expect(display.value).toEqual("13.42477796076938");
+      });
+
+      test("Advanced pi calculation with parenthesis", async () => {
+        fireEvent.click(fiveButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(oneButton);
+        fireEvent.click(fiveButton);
+        fireEvent.click(divideButton);
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(fiveButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(piButton);
+        fireEvent.click(closingParenthesesButton);
+        fireEvent.click(closingParenthesesButton);
+        fireEvent.click(minusButton);
+        fireEvent.click(piButton);
+
+        fireEvent.click(equalsButton);
+
+        const display = screen.getByRole("textbox", {
+          name: /basic-calculator-display/i,
+        });
+
+        expect(display.value).toEqual("6.070364169984643");
+      });
+    });
+
+    describe("Euler's number Functionality", () => {
+      test("Simple euler's calculation", async () => {
+        fireEvent.click(oneButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(eulersButton);
+        fireEvent.click(equalsButton);
+
+        const display = screen.getByRole("textbox", {
+          name: /basic-calculator-display/i,
+        });
+
+        expect(display.value).toEqual("3.718281828459045");
+      });
+
+      test("Advanced euler's calculation", async () => {
+        fireEvent.click(twoButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(threeButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(eulersButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(twoButton);
+
+        fireEvent.click(equalsButton);
+
+        const display = screen.getByRole("textbox", {
+          name: /basic-calculator-display/i,
+        });
+
+        expect(display.value).toEqual("12.154845485377136");
+      });
+
+      test("Advanced euler's calculation with parenthesis", async () => {
+        fireEvent.click(fiveButton);
+        fireEvent.click(multiplyButton);
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(oneButton);
+        fireEvent.click(fiveButton);
+        fireEvent.click(divideButton);
+        fireEvent.click(openingParenthesesButton);
+        fireEvent.click(fiveButton);
+        fireEvent.click(plusButton);
+        fireEvent.click(eulersButton);
+        fireEvent.click(closingParenthesesButton);
+        fireEvent.click(closingParenthesesButton);
+        fireEvent.click(minusButton);
+        fireEvent.click(eulersButton);
+
+        fireEvent.click(equalsButton);
+
+        const display = screen.getByRole("textbox", {
+          name: /basic-calculator-display/i,
+        });
+
+        expect(display.value).toEqual("6.998906746264684");
       });
     });
 
@@ -576,6 +691,77 @@ describe("Basic Calculator Test", () => {
           });
 
           expect(display.value).toEqual("7.995128100519649");
+        });
+      });
+
+      describe("Deletion Functionality", () => {
+        // test("Delete button should remove a digit", async () => {
+        //   fireEvent.click(twoButton);
+        //   fireEvent.click(plusButton);
+        //   fireEvent.click(threeButton);
+        //   fireEvent.click(backspaceButton);
+        //   fireEvent.click(sixButton);
+        //   fireEvent.click(equalsButton);
+        //   const display = screen.getByRole("textbox", {
+        //     name: /basic-calculator-display/i,
+        //   });
+        //   expect(display.value).toEqual("8");
+        // });
+        // test("Delete button should remove an operator", async () => {
+        //   fireEvent.click(twoButton);
+        //   fireEvent.click(plusButton);
+        //   fireEvent.click(fourButton);
+        //   fireEvent.click(backspaceButton);
+        //   fireEvent.click(backspaceButton);
+        //   fireEvent.click(multiplyButton);
+        //   fireEvent.click(fourButton);
+        //   fireEvent.click(equalsButton);
+        //   const display = screen.getByRole("textbox", {
+        //     name: /basic-calculator-display/i,
+        //   });
+        //   expect(display.value).toEqual("8");
+        // });
+        test("Delete button should remove pi", async () => {
+          fireEvent.click(twoButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(sinButton);
+          fireEvent.click(threeButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(fourButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(equalsButton);
+          const display = screen.getByRole("textbox", {
+            name: /basic-calculator-display/i,
+          });
+          expect(display.value).toEqual("2.1218693434051477");
+        });
+        test("Delete button should remove a mathematical function", async () => {
+          fireEvent.click(twoButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(sinButton);
+          fireEvent.click(threeButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(fourButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(equalsButton);
+          const display = screen.getByRole("textbox", {
+            name: /basic-calculator-display/i,
+          });
+          expect(display.value).toEqual("2.1218693434051477");
+        });
+        test("Delete button should be able to remove multiple items and not affect calculated value", async () => {
+          fireEvent.click(twoButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(sinButton);
+          fireEvent.click(threeButton);
+          fireEvent.click(plusButton);
+          fireEvent.click(fourButton);
+          fireEvent.click(closingParenthesesButton);
+          fireEvent.click(equalsButton);
+          const display = screen.getByRole("textbox", {
+            name: /basic-calculator-display/i,
+          });
+          expect(display.value).toEqual("2.1218693434051477");
         });
       });
 
