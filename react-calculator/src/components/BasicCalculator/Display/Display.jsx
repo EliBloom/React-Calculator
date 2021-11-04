@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
-import { Input } from "antd";
+import { AutoComplete, Input } from "antd";
+import Trie from "../../Autocomplete/Trie";
 
 /**
  * This class is essentially a box that serves as the display for the the user's input as well as the final calculation
@@ -19,7 +20,12 @@ export function Display({
   backspaceCallback,
 }) {
   const inputStyle = { width: "334px" };
+  const autoComplete = new Trie();
 
+  useEffect(() => {
+    autoComplete.insert("this");
+    console.log(autoComplete.startsWith("thf"));
+  });
   // const handleKeys = useCallback((event) => {
   //   debounce(handleKeyDown(event), 1000);
   // });
@@ -59,7 +65,6 @@ export function Display({
   }
 
   function handleKeyDown(event) {
-    console.log(event);
     switch (event) {
       case "0":
         digitCallback("0");
