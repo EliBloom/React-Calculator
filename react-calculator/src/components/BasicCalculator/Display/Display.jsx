@@ -24,7 +24,12 @@ export function Display({
 
   useEffect(() => {
     autoComplete.insert("this");
-    console.log(autoComplete.startsWith("thf"));
+    autoComplete.insert("things");
+    autoComplete.insert("the");
+    autoComplete.insert("that");
+    autoComplete.insert("throll");
+
+    console.log(autoComplete.getPostFixes("th"));
   });
   // const handleKeys = useCallback((event) => {
   //   debounce(handleKeyDown(event), 1000);

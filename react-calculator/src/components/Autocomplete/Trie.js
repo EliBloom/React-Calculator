@@ -10,6 +10,9 @@ export default class Trie {
     this.rootNode = new TrieNode(null);
   }
 
+  // simply takes a word list and fills the trie with them
+  fillTrie() {}
+
   // inserting keys in a random order allows for a well balanced tree, adding in alphabetical order leads to worse performance
   insert(word) {
     let current = this.rootNode;
@@ -26,20 +29,54 @@ export default class Trie {
   remove() {}
 
   // determines if a whole word is in the trie
-  search() {}
+  search(word) {
+    let node = this.getNode(word);
+    if (node && node.isCompletedWord) {
+      return true;
+    }
+
+    return false;
+  }
 
   // determines if a prefix is in the trie
-  startsWith(wordSequence) {
-    let current = this.rootNode;
-    let doesContainWordSequence = true;
+  startsWith(word) {
+    let node = this.getNode(word);
+    if (node) {
+      return true;
+    }
 
-    [...wordSequence].forEach((character) => {
+    return false;
+  }
+
+  // returns the possible words that the user can choose from what they have enterd
+  getPostFixes(wordPrefix) {
+    let current = this.rootNode;
+    let children = [];
+    let postFixes = [];
+    let wordPrefixLength = [...wordPrefix].length;
+    for (let x = 0; x < wordPrefixLength; x++) {
+      if (x === wordPrefixLength - 1) {
+        children = current.children;
+      }
+      current = current.children.get(character);
+    }
+
+    // [...wordPrefix].forEach(character =>{
+
+    //   current = current.children.get(character);
+    // })
+  }
+
+  getNode(word) {
+    let current = this.rootNode;
+
+    [...word].forEach((character) => {
       if (!current.children.get(character)) {
-        doesContainWordSequence = false;
+        return null;
       }
       current = current.children.get(character);
     });
 
-    return doesContainWordSequence;
+    return current;
   }
 }
