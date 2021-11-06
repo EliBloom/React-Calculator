@@ -6,7 +6,6 @@ import Trie from "../../Autocomplete/Trie";
  * This class is essentially a box that serves as the display for the the user's input as well as the final calculation
  * found from the input equation. This will eventually have to parse the equation so that the calculator will also be
  * able to take input from typing it on their keyboard.
- *
  */
 export function Display({
   expression,
@@ -28,6 +27,9 @@ export function Display({
     autoComplete.insert("the");
     autoComplete.insert("that");
     autoComplete.insert("throll");
+    autoComplete.insert("thick");
+    autoComplete.insert("toggle");
+    autoComplete.insert("tick");
 
     console.log(autoComplete.getPostFixes("th"));
   });

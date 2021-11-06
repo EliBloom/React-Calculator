@@ -1,10 +1,19 @@
 import TrieNode from "./TrieNode";
 
+/**
+ * This class is essentially a box that serves as the display for the the user's input as well as the final calculation
+ * found from the input equation. This will eventually have to parse the equation so that the calculator will also be
+ * able to take input from typing it on their keyboard.
+ */
 export default class Trie {
   // the root node for the tree
   rootNode;
   // this is the string that is being searched for inside of the tree
   searchString;
+
+  postFixes = [];
+
+  wordPrefix = "";
 
   constructor() {
     this.rootNode = new TrieNode(null);
@@ -26,8 +35,6 @@ export default class Trie {
     current.isCompletedWord = true;
   }
 
-  remove() {}
-
   // determines if a whole word is in the trie
   search(word) {
     let node = this.getNode(word);
@@ -48,23 +55,45 @@ export default class Trie {
     return false;
   }
 
+  getPostFixesHelper(node, wordPrefix) {
+    wordPrefix += node.character;
+
+    if (node.isCompletedWord) {
+      this.postFixes.push(wordPrefix);
+    }
+
+    if (node.children.size === 0) {
+      return;
+    }
+
+    node.children.forEach((childNode) => {
+      this.getPostFixesHelper(childNode, wordPrefix);
+    });
+  }
+
   // returns the possible words that the user can choose from what they have enterd
   getPostFixes(wordPrefix) {
     let current = this.rootNode;
+    this.wordPrefix = wordPrefix;
     let children = [];
-    let postFixes = [];
-    let wordPrefixLength = [...wordPrefix].length;
-    for (let x = 0; x < wordPrefixLength; x++) {
-      if (x === wordPrefixLength - 1) {
-        children = current.children;
-      }
-      current = current.children.get(character);
+    let temp = [...wordPrefix];
+    let wordPrefixLength = temp.length;
+    if (!this.startsWith(wordPrefix)) {
+      return "Invalid Entry";
     }
 
-    // [...wordPrefix].forEach(character =>{
+    for (let x = 0; x <= wordPrefixLength; x++) {
+      if (x === wordPrefixLength) {
+        children = current.children;
+      }
+      current = current.children.get(wordPrefix.charAt(x));
+    }
 
-    //   current = current.children.get(character);
-    // })
+    children.forEach((childNode) => {
+      this.getPostFixesHelper(childNode, wordPrefix);
+    });
+
+    return this.postFixes;
   }
 
   getNode(word) {
