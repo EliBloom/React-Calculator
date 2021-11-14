@@ -1,14 +1,15 @@
 /**
- * This class is essentially a box that serves as the display for the the user's input as well as the final calculation
- * found from the input equation. This will eventually have to parse the equation so that the calculator will also be
- * able to take input from typing it on their keyboard.
+ * This class is used to make up all of the nodes contained in a trie.
  */
 export default class TrieNode {
+  // Marks when the current TrieNode is the final character in word
   isCompletedWord = false;
+  // The individual character to be kept track of
   character;
-  // new Hashmap <character, node>
+  // Mapping of child nodes; <character, TrieNode(character)>
   children = new Map();
 
+  // Construct new TrieNode
   constructor(character) {
     this.character = character;
   }

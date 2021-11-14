@@ -19,7 +19,7 @@ export default function ButtonPad({
   const buttonStyle = { padding: "8px", margin: "2px", width: "80px" };
 
   return (
-    <>
+    <div>
       <Row>
         <Col>
           <Button
@@ -330,6 +330,6 @@ export default function ButtonPad({
           </Button>
         </Col>
       </Row>
-    </>
+    </div>
   );
 }

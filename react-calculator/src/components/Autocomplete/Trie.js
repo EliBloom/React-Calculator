@@ -11,16 +11,18 @@ export default class Trie {
   // this is the string that is being searched for inside of the tree
   searchString;
 
-  postFixes = [];
-
-  wordPrefix = "";
+  // wordPrefix = "";
 
   constructor() {
     this.rootNode = new TrieNode(null);
   }
 
   // simply takes a word list and fills the trie with them
-  fillTrie() {}
+  fillTrie(wordSet) {
+    wordSet.forEach((word) => {
+      this.insert(word);
+    });
+  }
 
   // inserting keys in a random order allows for a well balanced tree, adding in alphabetical order leads to worse performance
   insert(word) {
@@ -36,7 +38,7 @@ export default class Trie {
   }
 
   // determines if a whole word is in the trie
-  search(word) {
+  contains(word) {
     let node = this.getNode(word);
     if (node && node.isCompletedWord) {
       return true;
@@ -55,11 +57,11 @@ export default class Trie {
     return false;
   }
 
-  getPostFixesHelper(node, wordPrefix) {
+  getPostFixesHelper(node, wordPrefix, postFixes) {
     wordPrefix += node.character;
 
     if (node.isCompletedWord) {
-      this.postFixes.push(wordPrefix);
+      postFixes.push(wordPrefix);
     }
 
     if (node.children.size === 0) {
@@ -67,16 +69,17 @@ export default class Trie {
     }
 
     node.children.forEach((childNode) => {
-      this.getPostFixesHelper(childNode, wordPrefix);
+      this.getPostFixesHelper(childNode, wordPrefix, postFixes);
     });
   }
 
   // returns the possible words that the user can choose from what they have enterd
   getPostFixes(wordPrefix) {
     let current = this.rootNode;
-    this.wordPrefix = wordPrefix;
+    // this.wordPrefix = wordPrefix;
     let children = [];
     let temp = [...wordPrefix];
+    let postFixes = [];
     let wordPrefixLength = temp.length;
     if (!this.startsWith(wordPrefix)) {
       return "Invalid Entry";
@@ -90,10 +93,10 @@ export default class Trie {
     }
 
     children.forEach((childNode) => {
-      this.getPostFixesHelper(childNode, wordPrefix);
+      this.getPostFixesHelper(childNode, wordPrefix, postFixes);
     });
 
-    return this.postFixes;
+    return postFixes;
   }
 
   getNode(word) {
@@ -101,7 +104,7 @@ export default class Trie {
 
     [...word].forEach((character) => {
       if (!current.children.get(character)) {
-        return null;
+        return (current = null);
       }
       current = current.children.get(character);
     });

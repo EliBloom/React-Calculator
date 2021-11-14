@@ -1,6 +1,7 @@
-import React, { useEffect } from "react";
-import { AutoComplete, Input } from "antd";
+import React, { useEffect, useState, useRef } from "react";
+import { AutoComplete, Input, List } from "antd";
 import Trie from "../../Autocomplete/Trie";
+import allowedKeywords from "../Utils/KeywordDataset";
 
 /**
  * This class is essentially a box that serves as the display for the the user's input as well as the final calculation
@@ -12,6 +13,7 @@ export function Display({
   digitCallback,
   equalsCallback,
   operatorCallback,
+  userEnteredFunctionCallback,
   allClearCallback,
   piCallback,
   eulersCallback,
@@ -19,60 +21,40 @@ export function Display({
   backspaceCallback,
 }) {
   const inputStyle = { width: "334px" };
+  const buttonStyle = { width: "334px" };
   const autoComplete = new Trie();
-
+  const [data, setData] = useState([]);
+  let typedFunctionName = useRef("");
   useEffect(() => {
-    autoComplete.insert("this");
-    autoComplete.insert("things");
-    autoComplete.insert("the");
-    autoComplete.insert("that");
-    autoComplete.insert("throll");
-    autoComplete.insert("thick");
-    autoComplete.insert("toggle");
-    autoComplete.insert("tick");
+    console.log("re render");
+    autoComplete.fillTrie(allowedKeywords);
 
-    console.log(autoComplete.getPostFixes("th"));
-  });
-  // const handleKeys = useCallback((event) => {
-  //   debounce(handleKeyDown(event), 1000);
-  // });
+    console.log(autoComplete.getPostFixes("s"));
+  }, [allowedKeywords]);
 
-  // const delayedQuery = useCallback(
-  //   _.debounce((q) => sendQuery(q), 500),
-  //   []
-  // );
-
-  // const debounce = (func, wait) => {
-  //   let timeout;
-
-  //   return function executedFunction(...args) {
-  //     const later = () => {
-  //       clearTimeout(timeout);
-  //       func(...args);
-  //     };
-
-  //     clearTimeout(timeout);
-  //     timeout = setTimeout(later, wait);
-  //   };
-  // };
-  // function debounce(passedFunc, waitTime) {
-  //   let timeout;
-
-  //   // return () => {
-  //   clearTimeout(timeout);
-
-  //   setTimeout(passedFunc, waitTime);
-  //   // };
-  // }
+  /**
+   * Called when user click on a suggested word supplied by the autocomplete
+   */
+  function handleSugestionClick(suggestion) {}
 
   function handleInputChange(userInput) {
-    if (userInput === "") {
+    typedFunctionName.current += userInput;
+    if (
+      autoComplete.startsWith(typedFunctionName.current) &&
+      !autoComplete.contains(typedFunctionName.current)
+    ) {
+      userEnteredFunctionCallback(userInput);
+      setData(autoComplete.getPostFixes(userInput));
+    } else if (!autoComplete.startsWith(typedFunctionName.current)) {
+      typedFunctionName.current.splice(-1);
+      // print out error becuase user is entering invalid text
+    } else {
+      handleKeyDown(userInput.slice(-1));
     }
-    handleKeyDown(userInput.slice(-1));
   }
 
-  function handleKeyDown(event) {
-    switch (event) {
+  function handleKeyDown(enteredCharacter) {
+    switch (enteredCharacter) {
       case "0":
         digitCallback("0");
         break;
@@ -161,6 +143,24 @@ export function Display({
           }
         }}
       />
+      {data.length > 0 && (
+        <List
+          size="small"
+          bordered
+          style={buttonStyle}
+          dataSource={data}
+          renderItem={(item) => (
+            <List.Item
+              onClick={(e) => {
+                console.log(e.target.innerText);
+              }}
+              style={{ fontSize: "small" }}
+            >
+              {item}
+            </List.Item>
+          )}
+        />
+      )}
     </div>
   );
 }

@@ -1,13 +1,15 @@
-import React, { useState, useRef, useReducer } from "react";
+import React, { useState, useRef, useReducer, useContext } from "react";
 import Display from "./Display";
 import ButtonPad from "./ButtonPad";
+// import { ErrorContext } from "../App/App";
 
 /** MAYBE USE CONTEXTS TO PASS DATA FOR PRACTICE */
 
 /**
  * This class is just a standard equation calculator.
  */
-export default function BasicCalculator({ errorMessageCallback }) {
+// export default function BasicCalculator({ errorMessageCallback }) {
+export default function BasicCalculator() {
   // the string that is used for the display
   const [equationString, setEquationString] = useState("");
   // this is to keep track of where each operator is in the equation array
@@ -39,6 +41,15 @@ export default function BasicCalculator({ errorMessageCallback }) {
     justifyContent: "center",
     alignItems: "center",
   };
+
+  // let errorMessageCallback = useContext(ErrorContext);
+
+  /**
+   * Callback for when a number is entered into the calculator.
+   *
+   * @param userInput - string of the numerical input.
+   */
+  function handleUserEnteredFunctionCallback(userInput) {}
 
   /**
    * Callback for when a number is entered into the calculator.
@@ -158,6 +169,8 @@ export default function BasicCalculator({ errorMessageCallback }) {
 
   /**
    * Callback for when the backspace button is pressed.
+   *
+   * Currently does not work for using the backspace keyboard button
    */
   function handleBackspaceCallback() {
     if (callStack.current.length > 0) {
@@ -443,7 +456,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
   function calculate() {
     // Check if parentheses are properly entered
     if (operatorMap.current["("].length != operatorMap.current[")"].length) {
-      errorMessageCallback("Incorrect Use of Parenthesis");
+      // errorMessageCallback("Incorrect Use of Parenthesis");
     }
     if (operatorMap.current["("].length > 0) {
       // remove and solve sub problems within parentheses
@@ -561,6 +574,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
         digitCallback={handleDigitCallback}
         equalsCallback={handleEqualsCallback}
         operatorCallback={handleOperatorCallback}
+        userEnteredFunctionCallback={handleUserEnteredFunctionCallback}
         allClearCallback={handleAllClearCallback}
         piCallback={handlePiCallback}
         eulersCallback={handleEulersCallback}
