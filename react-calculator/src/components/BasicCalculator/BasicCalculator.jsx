@@ -1,13 +1,15 @@
-import React, { useState, useRef, useReducer } from "react";
+import React, { useState, useRef, useReducer, useContext } from "react";
 import Display from "./Display";
 import ButtonPad from "./ButtonPad";
+import { ErrorContext } from "../App/App";
 
 /** MAYBE USE CONTEXTS TO PASS DATA FOR PRACTICE */
 
 /**
  * This class is just a standard equation calculator.
  */
-export default function BasicCalculator({ errorMessageCallback }) {
+// export default function BasicCalculator({ errorMessageCallback }) {
+export default function BasicCalculator() {
   // the string that is used for the display
   const [equationString, setEquationString] = useState("");
   // this is to keep track of where each operator is in the equation array
@@ -40,6 +42,26 @@ export default function BasicCalculator({ errorMessageCallback }) {
     alignItems: "center",
   };
 
+  let errorMessageCallback = useContext(ErrorContext);
+
+  /**
+   * Callback for when a number is entered into the calculator.
+   *
+   * @param userInput - string of the numerical input.
+   */
+  function handleUserEnteredFunctionCallback(userInput) {
+    setEquationString(equationString + userInput);
+  }
+
+  /**
+   * Callback for when a number is entered into the calculator.
+   *
+   * @param userInput - string of the numerical input.
+   */
+  function handleClearEquationString(userInput) {
+    setEquationString(equationString + userInput);
+  }
+
   /**
    * Callback for when a number is entered into the calculator.
    *
@@ -65,7 +87,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
    *
    * @param operator - the mathematical operator symbol, e.g. +/*()
    */
-  function handleOperatorCallback(operator) {
+  function handleOperatorCallback(operator, wasTyped = false) {
     if (
       operand.current &&
       // PI Value
@@ -91,7 +113,10 @@ export default function BasicCalculator({ errorMessageCallback }) {
     isExpressionClosed.current = true;
 
     equation.current.push(operator);
-    setEquationString(equationString + operator);
+
+    if (!wasTyped) {
+      setEquationString(equationString + operator);
+    }
 
     //loop through the operatorsMap, if the the current key contains the operator parameter, push it to the array
     Object.keys(operatorMap.current).forEach((operatorKey) => {
@@ -143,21 +168,26 @@ export default function BasicCalculator({ errorMessageCallback }) {
    *
    * @param functionName - the name of the math function being called.
    */
-  function handleMathFunctionCallback(functionName) {
-    handleOperatorCallback(functionName);
-    handleOperatorCallback("(");
+  function handleMathFunctionCallback(functionName, wasTyped = false) {
+    handleOperatorCallback(functionName, wasTyped);
+    if (!wasTyped) {
+      handleOperatorCallback("(");
+      callStack.current.push({
+        previousFunctionCalled: "handleMathFunctionCallback",
+        // only do this when wasTyped is false, have to do this separately
+        value: functionName + "(",
+      });
+
+      setEquationString(equationString + functionName + "(");
+    }
     // used in backspace  method
     previousFunctionCalled.current = "handleMathFunctionCallback";
-    callStack.current.push({
-      previousFunctionCalled: "handleMathFunctionCallback",
-      value: functionName + "(",
-    });
-
-    setEquationString(equationString + functionName + "(");
   }
 
   /**
    * Callback for when the backspace button is pressed.
+   *
+   * Currently does not work for using the backspace keyboard button
    */
   function handleBackspaceCallback() {
     if (callStack.current.length > 0) {
@@ -561,6 +591,7 @@ export default function BasicCalculator({ errorMessageCallback }) {
         digitCallback={handleDigitCallback}
         equalsCallback={handleEqualsCallback}
         operatorCallback={handleOperatorCallback}
+        userEnteredFunctionCallback={handleUserEnteredFunctionCallback}
         allClearCallback={handleAllClearCallback}
         piCallback={handlePiCallback}
         eulersCallback={handleEulersCallback}

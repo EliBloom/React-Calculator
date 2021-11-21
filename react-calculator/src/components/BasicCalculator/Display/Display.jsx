@@ -1,17 +1,20 @@
-import React, { useEffect } from "react";
-import { Input } from "antd";
+import React, { useEffect, useState, useRef, useContext } from "react";
+import { Input, List } from "antd";
+import Trie from "../../Autocomplete/Trie";
+import allowedKeywords from "../Utils/KeywordDataset";
+import { ErrorContext } from "../../App/App";
 
 /**
  * This class is essentially a box that serves as the display for the the user's input as well as the final calculation
  * found from the input equation. This will eventually have to parse the equation so that the calculator will also be
  * able to take input from typing it on their keyboard.
- *
  */
 export function Display({
   expression,
   digitCallback,
   equalsCallback,
   operatorCallback,
+  userEnteredFunctionCallback,
   allClearCallback,
   piCallback,
   eulersCallback,
@@ -19,48 +22,68 @@ export function Display({
   backspaceCallback,
 }) {
   const inputStyle = { width: "334px" };
+  const buttonStyle = { width: "334px" };
+  const autoComplete = useRef(new Trie());
+  const [data, setData] = useState([]);
+  let typedFunctionName = useRef("");
+  let errorMessageCallback = useContext(ErrorContext);
 
-  // const handleKeys = useCallback((event) => {
-  //   debounce(handleKeyDown(event), 1000);
-  // });
+  useEffect(() => {
+    autoComplete.current.fillTrie(allowedKeywords);
+  }, [allowedKeywords]);
 
-  // const delayedQuery = useCallback(
-  //   _.debounce((q) => sendQuery(q), 500),
-  //   []
-  // );
+  /**
+   * Called when user click on a suggested word supplied by the autocomplete
+   */
+  function handleSuggestionClick(suggestion) {
+    let shortenedSuggestion = "";
 
-  // const debounce = (func, wait) => {
-  //   let timeout;
-
-  //   return function executedFunction(...args) {
-  //     const later = () => {
-  //       clearTimeout(timeout);
-  //       func(...args);
-  //     };
-
-  //     clearTimeout(timeout);
-  //     timeout = setTimeout(later, wait);
-  //   };
-  // };
-  // function debounce(passedFunc, waitTime) {
-  //   let timeout;
-
-  //   // return () => {
-  //   clearTimeout(timeout);
-
-  //   setTimeout(passedFunc, waitTime);
-  //   // };
-  // }
-
-  function handleInputChange(userInput) {
-    if (userInput === "") {
-    }
-    handleKeyDown(userInput.slice(-1));
+    Array.from(typedFunctionName.current).forEach(() => {
+      shortenedSuggestion = suggestion.slice(1);
+    });
+    setData([]);
+    mathFunctionCallback(suggestion, true);
+    operatorCallback("(", true);
+    userEnteredFunctionCallback(shortenedSuggestion + "(");
   }
 
-  function handleKeyDown(event) {
-    console.log(event);
-    switch (event) {
+  /**
+   * Called when user click on a suggested word supplied by the autocomplete
+   */
+  function handleInputChange(userInput) {
+    var reg = /^[a-wy-z]+$/i;
+
+    let lastEntered = "";
+    userInput.length === 1
+      ? (lastEntered = userInput)
+      : (lastEntered = userInput.slice(-1));
+
+    if (reg.test(lastEntered)) {
+      typedFunctionName.current += lastEntered;
+      if (
+        autoComplete.current.startsWith(typedFunctionName.current) &&
+        !autoComplete.current.contains(typedFunctionName.current)
+      ) {
+        userEnteredFunctionCallback(lastEntered);
+        setData(autoComplete.current.getPostFixes(typedFunctionName.current));
+      } else if (autoComplete.current.contains(typedFunctionName.current)) {
+        mathFunctionCallback(typedFunctionName.current, true);
+        operatorCallback("(", true);
+        userEnteredFunctionCallback(lastEntered + "(");
+        setData([]);
+      } else if (!autoComplete.current.startsWith(typedFunctionName.current)) {
+        typedFunctionName.current.length === 1
+          ? (typedFunctionName.current = "")
+          : (typedFunctionName.current = typedFunctionName.current.slice(-1));
+        errorMessageCallback("Invalid function entered");
+      }
+    } else {
+      handleKeyDown(lastEntered);
+    }
+  }
+
+  function handleKeyDown(enteredCharacter) {
+    switch (enteredCharacter) {
       case "0":
         digitCallback("0");
         break;
@@ -141,7 +164,7 @@ export function Display({
         placeholder="Basic usage"
         value={expression}
         onChange={(userInputEvent) => {
-          handleInputChange(userInputEvent.target.value);
+          handleInputChange(userInputEvent.target.value.toLocaleLowerCase());
         }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === "Backspace") {
@@ -149,6 +172,24 @@ export function Display({
           }
         }}
       />
+      {data.length > 0 && (
+        <List
+          size="small"
+          bordered
+          style={buttonStyle}
+          dataSource={data}
+          renderItem={(item) => (
+            <List.Item
+              onClick={(e) => {
+                handleSuggestionClick(e.target.innerText);
+              }}
+              style={{ fontSize: "small" }}
+            >
+              {item}
+            </List.Item>
+          )}
+        />
+      )}
     </div>
   );
 }
