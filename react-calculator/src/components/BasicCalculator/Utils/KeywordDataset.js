@@ -1,3 +1,6 @@
+/**
+ * Called when user click on a suggested word supplied by the autocomplete
+ */
 const allowedKeywords = [
   "sine",
   "sin",
@@ -9,7 +12,6 @@ const allowedKeywords = [
   "logarithm",
   "derivative",
   "integral",
-  "x",
   "y",
   "sqrt",
   "square root",

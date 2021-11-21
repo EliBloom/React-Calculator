@@ -1,7 +1,8 @@
-import React, { useEffect, useState, useRef } from "react";
-import { AutoComplete, Input, List } from "antd";
+import React, { useEffect, useState, useRef, useContext } from "react";
+import { Input, List } from "antd";
 import Trie from "../../Autocomplete/Trie";
 import allowedKeywords from "../Utils/KeywordDataset";
+import { ErrorContext } from "../../App/App";
 
 /**
  * This class is essentially a box that serves as the display for the the user's input as well as the final calculation
@@ -22,34 +23,62 @@ export function Display({
 }) {
   const inputStyle = { width: "334px" };
   const buttonStyle = { width: "334px" };
-  const autoComplete = new Trie();
+  const autoComplete = useRef(new Trie());
   const [data, setData] = useState([]);
   let typedFunctionName = useRef("");
-  useEffect(() => {
-    console.log("re render");
-    autoComplete.fillTrie(allowedKeywords);
+  let errorMessageCallback = useContext(ErrorContext);
 
-    console.log(autoComplete.getPostFixes("s"));
+  useEffect(() => {
+    autoComplete.current.fillTrie(allowedKeywords);
   }, [allowedKeywords]);
 
   /**
    * Called when user click on a suggested word supplied by the autocomplete
    */
-  function handleSugestionClick(suggestion) {}
+  function handleSuggestionClick(suggestion) {
+    let shortenedSuggestion = "";
 
+    Array.from(typedFunctionName.current).forEach(() => {
+      shortenedSuggestion = suggestion.slice(1);
+    });
+    setData([]);
+    mathFunctionCallback(suggestion, true);
+    operatorCallback("(", true);
+    userEnteredFunctionCallback(shortenedSuggestion + "(");
+  }
+
+  /**
+   * Called when user click on a suggested word supplied by the autocomplete
+   */
   function handleInputChange(userInput) {
-    typedFunctionName.current += userInput;
-    if (
-      autoComplete.startsWith(typedFunctionName.current) &&
-      !autoComplete.contains(typedFunctionName.current)
-    ) {
-      userEnteredFunctionCallback(userInput);
-      setData(autoComplete.getPostFixes(userInput));
-    } else if (!autoComplete.startsWith(typedFunctionName.current)) {
-      typedFunctionName.current.splice(-1);
-      // print out error becuase user is entering invalid text
+    var reg = /^[a-wy-z]+$/i;
+
+    let lastEntered = "";
+    userInput.length === 1
+      ? (lastEntered = userInput)
+      : (lastEntered = userInput.slice(-1));
+
+    if (reg.test(lastEntered)) {
+      typedFunctionName.current += lastEntered;
+      if (
+        autoComplete.current.startsWith(typedFunctionName.current) &&
+        !autoComplete.current.contains(typedFunctionName.current)
+      ) {
+        userEnteredFunctionCallback(lastEntered);
+        setData(autoComplete.current.getPostFixes(typedFunctionName.current));
+      } else if (autoComplete.current.contains(typedFunctionName.current)) {
+        mathFunctionCallback(typedFunctionName.current, true);
+        operatorCallback("(", true);
+        userEnteredFunctionCallback(lastEntered + "(");
+        setData([]);
+      } else if (!autoComplete.current.startsWith(typedFunctionName.current)) {
+        typedFunctionName.current.length === 1
+          ? (typedFunctionName.current = "")
+          : (typedFunctionName.current = typedFunctionName.current.slice(-1));
+        errorMessageCallback("Invalid function entered");
+      }
     } else {
-      handleKeyDown(userInput.slice(-1));
+      handleKeyDown(lastEntered);
     }
   }
 
@@ -135,7 +164,7 @@ export function Display({
         placeholder="Basic usage"
         value={expression}
         onChange={(userInputEvent) => {
-          handleInputChange(userInputEvent.target.value);
+          handleInputChange(userInputEvent.target.value.toLocaleLowerCase());
         }}
         onKeyDown={(event) => {
           if (event.key === "Enter" || event.key === "Backspace") {
@@ -152,7 +181,7 @@ export function Display({
           renderItem={(item) => (
             <List.Item
               onClick={(e) => {
-                console.log(e.target.innerText);
+                handleSuggestionClick(e.target.innerText);
               }}
               style={{ fontSize: "small" }}
             >

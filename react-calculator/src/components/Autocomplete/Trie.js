@@ -102,12 +102,16 @@ export default class Trie {
   getNode(word) {
     let current = this.rootNode;
 
-    [...word].forEach((character) => {
-      if (!current.children.get(character)) {
-        return (current = null);
-      }
-      current = current.children.get(character);
-    });
+    if (current === null) {
+      return null;
+    } else {
+      [...word].forEach((character) => {
+        if (!current.children.get(character)) {
+          return (current = null);
+        }
+        current = current.children.get(character);
+      });
+    }
 
     return current;
   }
