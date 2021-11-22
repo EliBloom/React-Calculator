@@ -1,8 +1,8 @@
 /**
- * This class is used to make up all of the nodes contained in a trie.
+ * This class is used to make up all of the nodes contained in the Autocomplete trie.
  */
 export default class TrieNode {
-  // Marks when the current TrieNode is the final character in word
+  // Marks when the current TrieNode is the final character in a word
   isCompletedWord = false;
   // The individual character to be kept track of
   character;

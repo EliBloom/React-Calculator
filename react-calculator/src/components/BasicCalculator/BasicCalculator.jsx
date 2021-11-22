@@ -3,12 +3,9 @@ import Display from "./Display";
 import ButtonPad from "./ButtonPad";
 import { ErrorContext } from "../App/App";
 
-/** MAYBE USE CONTEXTS TO PASS DATA FOR PRACTICE */
-
 /**
  * This class is just a standard equation calculator.
  */
-// export default function BasicCalculator({ errorMessageCallback }) {
 export default function BasicCalculator() {
   // the string that is used for the display
   const [equationString, setEquationString] = useState("");
@@ -42,23 +39,15 @@ export default function BasicCalculator() {
     alignItems: "center",
   };
 
+  // Context for the error message used in error pop over
   let errorMessageCallback = useContext(ErrorContext);
 
   /**
-   * Callback for when a number is entered into the calculator.
+   * Callback for when a number is entered into the Display component, set the equationString.
    *
-   * @param userInput - string of the numerical input.
+   * @param userInput - string of the user input.
    */
   function handleUserEnteredFunctionCallback(userInput) {
-    setEquationString(equationString + userInput);
-  }
-
-  /**
-   * Callback for when a number is entered into the calculator.
-   *
-   * @param userInput - string of the numerical input.
-   */
-  function handleClearEquationString(userInput) {
     setEquationString(equationString + userInput);
   }
 
@@ -85,7 +74,8 @@ export default function BasicCalculator() {
    * Callback for when an operator is entered. This will push the operand and operator to their perspective arrays
    * as well as increase the equationIndex.
    *
-   * @param operator - the mathematical operator symbol, e.g. +/*()
+   * @param operator - the mathematical operator symbol, e.g. +/*().
+   * @param wasTyped - Boolean value marking whether or not the operator was from user entering into Display.
    */
   function handleOperatorCallback(operator, wasTyped = false) {
     if (
@@ -164,17 +154,19 @@ export default function BasicCalculator() {
   }
 
   /**
-   * Callback for when a math function button is pressed.
+   * Callback for when a math function button is pressed/entered.
    *
    * @param functionName - the name of the math function being called.
+   * @param wasTyped - Boolean marking whether or not functionName is coming from user entered text.
    */
   function handleMathFunctionCallback(functionName, wasTyped = false) {
     handleOperatorCallback(functionName, wasTyped);
+
+    // if the function name was typed, this is handled in Display class.
     if (!wasTyped) {
       handleOperatorCallback("(");
       callStack.current.push({
         previousFunctionCalled: "handleMathFunctionCallback",
-        // only do this when wasTyped is false, have to do this separately
         value: functionName + "(",
       });
 
