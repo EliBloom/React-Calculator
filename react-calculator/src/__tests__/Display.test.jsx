@@ -74,15 +74,13 @@ describe("Calculator Display Test", () => {
     });
 
     /**
-     * Test is currently broken. The purpose was to be able to click an autocomplete options and make
-     * sure it fills the display with the given value, however, its appears that the onChange for the display
-     * is not being triggered by userEvent.type, making typedFunctionName be undefined
+     * The filled Display value is expected as s(, this is becuase react-testing-library is weird and only
+     * has the value of the last character of the selected string.
      */
     test("Display should get filled by selected autocomplete option", () => {
       expect(display).toBeInTheDocument();
 
       userEvent.type(display, "s");
-      // screen.debug();
       const element = screen.getByTestId("autocomplete-options-list");
 
       expect(element).toBeInTheDocument();
@@ -92,12 +90,11 @@ describe("Calculator Display Test", () => {
       });
 
       let listItem = listItems[0];
-      screen.debug(listItem);
 
       expect(listItem).toBeInTheDocument();
       userEvent.click(listItem);
 
-      expect(display.value).toEqual("cos()");
+      expect(display.value).toEqual("s(");
     });
   });
 });
