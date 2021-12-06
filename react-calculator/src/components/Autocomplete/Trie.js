@@ -115,9 +115,9 @@ export default class Trie {
 
     for (let x = 0; x <= wordPrefixLength; x++) {
       if (x === wordPrefixLength) {
-        children = current.children;
+        children = current?.children;
       }
-      current = current.children.get(wordPrefix.charAt(x));
+      current = current?.children.get(wordPrefix.charAt(x));
     }
 
     children.forEach((childNode) => {
@@ -139,7 +139,7 @@ export default class Trie {
       return null;
     } else {
       [...word].forEach((character) => {
-        if (!current.children.get(character)) {
+        if (!current?.children.get(character)) {
           return (current = null);
         }
         current = current.children.get(character);

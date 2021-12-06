@@ -31,7 +31,7 @@ export function Display({
   // Context for error message, main use is for displaying error on user entering invalid characters
   let errorMessageCallback = useContext(ErrorContext);
 
-  // Only fill the Trie when allowedKeywords is imported and loaded
+  // Only fill the Trie when allowedKeywords file is imported and loaded
   useEffect(() => {
     autoComplete.current.fillTrie(allowedKeywords);
   }, [allowedKeywords]);
@@ -45,10 +45,11 @@ export function Display({
   function handleSuggestionClick(suggestion) {
     let shortenedSuggestion = "";
 
-    //remove any characters from the selected autocomplete that have already been typed
-    Array.from(typedFunctionName.current).forEach(() => {
-      shortenedSuggestion = suggestion.slice(1);
-    });
+    suggestion &&
+      Array.from(typedFunctionName.current).forEach(() => {
+        shortenedSuggestion = suggestion.slice(1);
+      });
+
     setData([]);
     mathFunctionCallback(suggestion, true);
     operatorCallback("(", true);
@@ -199,6 +200,7 @@ export function Display({
       />
       {data.length > 0 && (
         <List
+          data-testid="autocomplete-options-list"
           size="small"
           bordered
           style={buttonStyle}
