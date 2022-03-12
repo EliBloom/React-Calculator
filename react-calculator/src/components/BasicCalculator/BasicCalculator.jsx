@@ -1,4 +1,4 @@
-import React, { useState, useRef, useReducer, useContext } from "react";
+import React, { useState, useRef, useContext } from "react";
 import Display from "./Display";
 import ButtonPad from "./ButtonPad";
 import { ErrorContext } from "../App/App";
@@ -57,7 +57,12 @@ export default function BasicCalculator() {
    * @param digit - string of the numerical input.
    */
   function handleDigitCallback(digit) {
+    if (operand.current === "" && digit === "0") {
+      errorMessageCallback("No Leading Zeros");
+      return;
+    }
     operand.current += digit;
+
     // used in backspace method
     previousFunctionCalled.current = "handleDigitCallback";
     previousOperand.current = operand.current;
@@ -81,9 +86,9 @@ export default function BasicCalculator() {
     if (
       operand.current &&
       // PI Value
-      previousOperand.current != "3.141592653589793" &&
+      previousOperand.current !== "3.141592653589793" &&
       // Euler's Constant Value
-      previousOperand.current != "2.718281828459045"
+      previousOperand.current !== "2.718281828459045"
     ) {
       equation.current.push(operand.current);
       equationIndex.current += 1;
@@ -184,7 +189,8 @@ export default function BasicCalculator() {
   function handleBackspaceCallback() {
     if (callStack.current.length > 0) {
       // needs to be handled when everything has been deleted
-      let toBeDeleted = callStack.current.pop();
+      callStack.current.pop();
+
       switch (previousFunctionCalled.current) {
         //BUG: handleDigitCallback is still messed up when you delete, readd, delete what you added, and add again does not work
         case "handleDigitCallback":
@@ -258,8 +264,8 @@ export default function BasicCalculator() {
   function handleEqualsCallback() {
     if (
       operand.current &&
-      previousOperand.current != "3.141592653589793" &&
-      previousOperand.current != "2.718281828459045"
+      previousOperand.current !== "3.141592653589793" &&
+      previousOperand.current !== "2.718281828459045"
     ) {
       equation.current.push(operand.current);
       equationIndex.current += 1;
@@ -336,7 +342,7 @@ export default function BasicCalculator() {
         if (
           equation.current[equationIndex] === "(" &&
           !openeningParenthesisArr.includes(equationIndex) &&
-          equationIndex != openingParentheses
+          equationIndex !== openingParentheses
         ) {
           openeningParenthesisArr.push(equationIndex);
         }
@@ -367,7 +373,7 @@ export default function BasicCalculator() {
 
             if (operatorsArr.length > 0) {
               // loop through the array value that is linked to the corresponding key
-              operatorsArrLoop: for (
+              for (
                 let operatorsArrIndex = 0;
                 operatorsArrIndex < operatorsArr.length;
                 operatorsArrIndex++
@@ -464,7 +470,7 @@ export default function BasicCalculator() {
    */
   function calculate() {
     // Check if parentheses are properly entered
-    if (operatorMap.current["("].length != operatorMap.current[")"].length) {
+    if (operatorMap.current["("].length !== operatorMap.current[")"].length) {
       errorMessageCallback("Incorrect Use of Parenthesis");
     }
     if (operatorMap.current["("].length > 0) {
