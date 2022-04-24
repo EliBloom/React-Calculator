@@ -57,9 +57,19 @@ export default function BasicCalculator() {
    * @param digit - string of the numerical input.
    */
   function handleDigitCallback(digit) {
-    if (operand.current === "" && digit === "0") {
-      errorMessageCallback("No Leading Zeros");
+    // needed for leading zero issue
+    let tempEquationString = equationString;
+
+    //no need to have 00, so do nothing if 0 is entered again
+    if (operand.current === "0" && digit === "0") {
       return;
+    }
+
+    //leading zeros will be replaced with the next non zero digit, if one is entered
+    if (operand.current === "0") {
+      operand.current = "";
+
+      tempEquationString = equationString.slice(0, -1);
     }
     operand.current += digit;
 
@@ -72,7 +82,7 @@ export default function BasicCalculator() {
     });
     isExpressionClosed.current = false;
 
-    setEquationString(equationString + digit);
+    setEquationString(tempEquationString + digit);
   }
 
   /**
@@ -86,8 +96,10 @@ export default function BasicCalculator() {
     if (
       operand.current &&
       // PI Value
+      //TODO consider using previousFunctionCalled instead
       previousOperand.current !== "3.141592653589793" &&
-      // Euler's Constant Value
+      // Euler's Constant Value,
+      //TODO consider using previousFunctionCalled instead
       previousOperand.current !== "2.718281828459045"
     ) {
       equation.current.push(operand.current);
@@ -126,8 +138,7 @@ export default function BasicCalculator() {
    * Callback for when the pi button is pressed.
    */
   function handlePiCallback() {
-    operand.current += Math.PI;
-    equation.current.push(operand.current);
+    equation.current.push(Math.PI);
     equationIndex.current += 1;
     previousOperand.current = Math.PI;
     callStack.current.push({
@@ -144,8 +155,7 @@ export default function BasicCalculator() {
    * Callback for when the Eulers/natural number button is pressed.
    */
   function handleEulersCallback() {
-    operand.current += Math.E;
-    equation.current.push(operand.current);
+    equation.current.push(Math.E);
     equationIndex.current += 1;
     previousOperand.current = Math.E;
     callStack.current.push({
@@ -326,7 +336,7 @@ export default function BasicCalculator() {
    * Helper function that rebases solves and removes any sub-equations that uses parenthesis, including mathematical function calls.
    */
   function solveParenthesisSubEquations() {
-    const openeningParenthesisArr = [];
+    const openingParenthesisArr = [];
     let openingParentheses;
     if (!equation.current.includes("(")) {
       return;
@@ -341,15 +351,15 @@ export default function BasicCalculator() {
         }
         if (
           equation.current[equationIndex] === "(" &&
-          !openeningParenthesisArr.includes(equationIndex) &&
+          !openingParenthesisArr.includes(equationIndex) &&
           equationIndex !== openingParentheses
         ) {
-          openeningParenthesisArr.push(equationIndex);
+          openingParenthesisArr.push(equationIndex);
         }
 
         if (equation.current[equationIndex] === ")") {
           if (isFirstParenthesis.current) {
-            openingParentheses = openeningParenthesisArr.pop();
+            openingParentheses = openingParenthesisArr.pop();
             isFirstParenthesis.current = false;
           }
 
@@ -406,7 +416,7 @@ export default function BasicCalculator() {
                     );
                     operatorMapIndex = 2;
 
-                    openingParentheses = openeningParenthesisArr.pop();
+                    openingParentheses = openingParenthesisArr.pop();
 
                     break operatorMapKeysLoop;
                   } else if (
@@ -423,7 +433,7 @@ export default function BasicCalculator() {
                     );
                     operatorMapIndex = 2;
 
-                    openingParentheses = openeningParenthesisArr.pop();
+                    openingParentheses = openingParenthesisArr.pop();
                     break operatorMapKeysLoop;
                   }
                   // if not, replace just the 1+1 portion rather than also taking out parentheses
